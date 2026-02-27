@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { NavigationState } from '../App';
 import { getHouse, characters, type TreeNode, type House } from '../data';
+import CharacterAvatar from '../components/CharacterAvatar';
 
 interface TreeViewProps {
   houseId: string;
@@ -34,6 +35,15 @@ const houseBgColor: Record<string, string> = {
   tully: 'bg-tully',
 };
 
+// Simple position: just geometry, no connection info
+interface NodePosition {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, setSpoilerMode }: TreeViewProps) {
   const house = getHouse(houseId);
   const [nodePositions, setNodePositions] = useState<NodePosition[]>([]);
@@ -61,37 +71,38 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
     });
   };
 
-  // Clear positions when house changes to prevent stale data
+  // Clear positions when house changes
   useEffect(() => {
     setNodePositions([]);
   }, [house.id]);
 
+  // Derive connections from tree structure, NOT from position data
   const renderConnections = () => {
     if (nodePositions.length === 0) return null;
-
+    const posMap = new Map(nodePositions.map(p => [p.id, p]));
     const paths: React.ReactElement[] = [];
 
-    nodePositions.forEach(node => {
-      // Draw line to parent
-      if (node.parentId) {
-        const parent = nodePositions.find(p => p.id === node.parentId);
-        if (parent) {
-          const startX = parent.x + parent.width / 2;
-          const startY = parent.y + parent.height;
-          const endX = node.x + node.width / 2;
-          const endY = node.y;
+    const traverseTree = (node: TreeNode, parentId?: string) => {
+      const pos = posMap.get(node.characterId);
+      if (!pos) return;
 
-          const controlY = startY + (endY - startY) / 2;
-
-          const path = `M ${startX} ${startY} C ${startX} ${controlY}, ${endX} ${controlY}, ${endX} ${endY}`;
+      // Parent -> Child connection
+      if (parentId) {
+        const parentPos = posMap.get(parentId);
+        if (parentPos) {
+          const startX = parentPos.x + parentPos.width / 2;
+          const startY = parentPos.y + parentPos.height;
+          const endX = pos.x + pos.width / 2;
+          const endY = pos.y;
+          const midY = startY + (endY - startY) * 0.5;
 
           paths.push(
             <path
-              key={`parent-${node.id}`}
-              d={path}
+              key={`child-${parentId}-${node.characterId}`}
+              d={`M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`}
               stroke="rgb(28, 25, 23)"
               strokeWidth="1.5"
-              strokeOpacity="0.2"
+              strokeOpacity="0.15"
               fill="none"
               strokeLinecap="round"
             />
@@ -99,34 +110,15 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
         }
       }
 
-      // Draw line to spouse
-      if (node.spouseId) {
-        const spouse = nodePositions.find(p => p.id === node.spouseId);
-        if (spouse && node.x < spouse.x) { // Only draw once
-          const startX = node.x + node.width;
-          const startY = node.y + node.height / 2;
-          const endX = spouse.x;
-          const endY = spouse.y + spouse.height / 2;
-
-          const controlX = startX + (endX - startX) / 2;
-
-          const path = `M ${startX} ${startY} C ${controlX} ${startY}, ${controlX} ${endY}, ${endX} ${endY}`;
-
-          paths.push(
-            <path
-              key={`spouse-${node.id}-${spouse.id}`}
-              d={path}
-              stroke="rgb(28, 25, 23)"
-              strokeWidth="1.5"
-              strokeOpacity="0.2"
-              fill="none"
-              strokeLinecap="round"
-            />
-          );
+      // Recurse into children
+      if (node.children) {
+        for (const child of node.children) {
+          traverseTree(child, node.characterId);
         }
       }
-    });
+    };
 
+    traverseTree(house.tree);
     return paths;
   };
 
@@ -165,18 +157,24 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
         <div ref={treeContainerRef} className="relative flex justify-center min-w-max pb-6">
           {/* SVG Connector Layer */}
           {nodePositions.length > 0 && (() => {
-            const minX = Math.min(...nodePositions.map(n => n.x));
-            const minY = Math.min(...nodePositions.map(n => n.y));
-            const maxX = Math.max(...nodePositions.map(n => n.x + n.width));
-            const maxY = Math.max(...nodePositions.map(n => n.y + n.height));
-            const width = maxX - minX;
-            const height = maxY - minY;
+            const allX = nodePositions.flatMap(n => [n.x, n.x + n.width]);
+            const allY = nodePositions.flatMap(n => [n.y, n.y + n.height]);
+            const minX = Math.min(...allX) - 20;
+            const minY = Math.min(...allY) - 20;
+            const maxX = Math.max(...allX) + 20;
+            const maxY = Math.max(...allY) + 20;
 
             return (
               <svg
-                className="absolute top-0 left-0 pointer-events-none z-0"
-                viewBox={`${minX} ${minY} ${width} ${height}`}
-                style={{ width: '100%', height: '100%', overflow: 'visible' }}
+                className="absolute top-0 left-0 pointer-events-none"
+                style={{
+                  width: maxX - minX,
+                  height: maxY - minY,
+                  left: minX,
+                  top: minY,
+                  overflow: 'visible',
+                }}
+                viewBox={`${minX} ${minY} ${maxX - minX} ${maxY - minY}`}
               >
                 {renderConnections()}
               </svg>
@@ -213,9 +211,7 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
                   className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-parchment transition-colors group"
                 >
                   <div className="relative">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-parchment to-parchment-dark border-2 border-parchment-dark group-hover:border-primary/30 transition-colors flex items-center justify-center">
-                      <span className={`material-symbols-outlined text-2xl ${textColor} opacity-60`}>person</span>
-                    </div>
+                    <CharacterAvatar character={char} size="md" className="group-hover:ring-2 group-hover:ring-primary/50 transition-all" />
                     {spoilerMode && char.isDead && (
                       <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-crimson rounded-full flex items-center justify-center border border-white">
                         <span className="material-symbols-outlined text-white text-[8px]">skull</span>
@@ -223,8 +219,8 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
                     )}
                   </div>
                   <div className="text-center">
-                    <div className="text-[11px] font-display font-bold text-ink leading-tight group-hover:text-primary transition-colors">{char.name.split(' ')[0]}</div>
-                    {char.alias && <div className="text-[9px] text-ink-light italic">{char.alias}</div>}
+                    <div className="text-xs font-display font-bold text-ink leading-tight group-hover:text-primary transition-colors">{char.name.split(' ')[0]}</div>
+                    {char.alias && <div className="text-[10px] text-ink-light italic">{char.alias}</div>}
                   </div>
                 </button>
               );
@@ -236,16 +232,6 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
       </main>
     </div>
   );
-}
-
-interface NodePosition {
-  id: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  parentId?: string;
-  spouseId?: string;
 }
 
 interface TreeNodeProps {
@@ -266,6 +252,7 @@ function TreeNodeComponent(props: TreeNodeProps) {
   const cardRef = useRef<HTMLButtonElement>(null);
   const spouseCardRef = useRef<HTMLButtonElement>(null);
 
+  // Report main character position (geometry only)
   useEffect(() => {
     if (!cardRef.current || !onPositionUpdate) return;
 
@@ -281,7 +268,6 @@ function TreeNodeComponent(props: TreeNodeProps) {
           y: rect.top - containerRect.top,
           width: rect.width,
           height: rect.height,
-          spouseId: spouse?.id,
         });
       }
     };
@@ -289,8 +275,9 @@ function TreeNodeComponent(props: TreeNodeProps) {
     updatePosition();
     window.addEventListener('resize', updatePosition);
     return () => window.removeEventListener('resize', updatePosition);
-  }, [char.id, spouse?.id, onPositionUpdate]);
+  }, [char.id, onPositionUpdate]);
 
+  // Report spouse position (geometry only)
   useEffect(() => {
     if (!spouseCardRef.current || !spouse || !onPositionUpdate) return;
 
@@ -306,8 +293,6 @@ function TreeNodeComponent(props: TreeNodeProps) {
           y: rect.top - containerRect.top,
           width: rect.width,
           height: rect.height,
-          parentId: char.id,
-          spouseId: char.id,
         });
       }
     };
@@ -315,7 +300,7 @@ function TreeNodeComponent(props: TreeNodeProps) {
     updatePosition();
     window.addEventListener('resize', updatePosition);
     return () => window.removeEventListener('resize', updatePosition);
-  }, [spouse?.id, char.id, onPositionUpdate]);
+  }, [spouse?.id, onPositionUpdate]);
 
   if (!char) return null;
 
@@ -324,53 +309,49 @@ function TreeNodeComponent(props: TreeNodeProps) {
   return (
     <div className="flex flex-col items-center">
       {/* Current Node + Spouse */}
-      <div className="flex items-center gap-2 relative z-10">
+      <div className="flex items-center gap-3 relative z-10">
         {/* Main Character Card */}
         <button
           ref={cardRef}
           onClick={() => onCharacterClick(char.id)}
-          className={`${isRoot ? 'bg-white shadow-md' : 'bg-parchment/50 shadow-sm'} p-3 rounded-xl border border-parchment-dark flex flex-col items-center w-28 hover:shadow-lg hover:border-primary/30 transition-all cursor-pointer group`}
+          className={`${isRoot ? 'bg-white shadow-md' : 'bg-parchment/50 shadow-sm'} p-3.5 rounded-xl border border-parchment-dark flex flex-col items-center w-32 hover:shadow-lg hover:border-primary/30 transition-all cursor-pointer group`}
         >
           <div className="relative mb-2">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-parchment to-parchment-dark border-2 border-ink/10 group-hover:border-primary/40 transition-colors flex items-center justify-center">
-              <span className={`material-symbols-outlined text-3xl ${textColor} opacity-60`}>person</span>
-            </div>
+            <CharacterAvatar character={char} size="lg" className="group-hover:ring-2 group-hover:ring-primary/30 transition-all" />
             {spoilerMode && char.isDead && (
               <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-5 h-5 bg-crimson rounded-full flex items-center justify-center border-2 border-white shadow-sm">
                 <span className="material-symbols-outlined text-white text-[10px]">skull</span>
               </div>
             )}
           </div>
-          <h3 className="font-display font-bold text-ink text-sm text-center leading-tight group-hover:text-primary transition-colors">{char.name.split(' ')[0]}</h3>
-          {char.alias && <p className="text-[10px] text-ink-light/70 italic mt-0.5">{char.alias}</p>}
-          <p className="text-[11px] text-ink-light font-body italic mt-0.5 text-center leading-tight line-clamp-1">{char.title.split(',')[0]}</p>
+          <h3 className="font-display font-bold text-ink text-base text-center leading-tight group-hover:text-primary transition-colors">{char.name.split(' ')[0]}</h3>
+          {char.alias && <p className="text-xs text-ink-light/70 italic mt-0.5">{char.alias}</p>}
+          <p className="text-xs text-ink-light font-body italic mt-0.5 text-center leading-tight line-clamp-1">{char.title.split(',')[0]}</p>
         </button>
 
         {/* Spouse */}
         {spouse && (
           <>
             <div className="flex items-center gap-1">
-              <div className="w-3 h-px bg-ink/20"></div>
-              <span className="text-[10px] text-ink-light/50 italic">m.</span>
-              <div className="w-3 h-px bg-ink/20"></div>
+              <div className="w-4 h-px bg-ink/20"></div>
+              <span className="text-xs text-ink-light/50 italic">m.</span>
+              <div className="w-4 h-px bg-ink/20"></div>
             </div>
             <button
               ref={spouseCardRef}
               onClick={() => onCharacterClick(spouse.id)}
-              className="bg-parchment/30 p-2.5 rounded-xl border border-parchment-dark/50 flex flex-col items-center w-28 hover:shadow-md hover:border-primary/30 transition-all cursor-pointer group"
+              className="bg-parchment/30 p-3 rounded-xl border border-parchment-dark/50 flex flex-col items-center w-32 hover:shadow-md hover:border-primary/30 transition-all cursor-pointer group"
             >
-              <div className="relative mb-1.5">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-parchment to-parchment-dark border-2 border-ink/10 group-hover:border-primary/40 transition-colors flex items-center justify-center">
-                  <span className={`material-symbols-outlined text-2xl ${textColor} opacity-60`}>person</span>
-                </div>
+              <div className="relative mb-2">
+                <CharacterAvatar character={spouse} size="lg" className="group-hover:ring-2 group-hover:ring-primary/30 transition-all" />
                 {spoilerMode && spouse.isDead && (
-                  <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-4 h-4 bg-crimson rounded-full flex items-center justify-center border-2 border-white shadow-sm">
-                    <span className="material-symbols-outlined text-white text-[8px]">skull</span>
+                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-5 h-5 bg-crimson rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+                    <span className="material-symbols-outlined text-white text-[10px]">skull</span>
                   </div>
                 )}
               </div>
-              <h3 className="font-display font-bold text-ink text-sm text-center leading-tight group-hover:text-primary transition-colors">{spouse.name.split(' ')[0]}</h3>
-              <p className="text-[10px] text-ink-light font-body italic mt-0.5 text-center leading-tight line-clamp-1">{spouse.title.split(',')[0]}</p>
+              <h3 className="font-display font-bold text-ink text-base text-center leading-tight group-hover:text-primary transition-colors">{spouse.name.split(' ')[0]}</h3>
+              <p className="text-xs text-ink-light font-body italic mt-0.5 text-center leading-tight line-clamp-1">{spouse.title.split(',')[0]}</p>
             </button>
           </>
         )}
@@ -379,11 +360,8 @@ function TreeNodeComponent(props: TreeNodeProps) {
       {/* Children */}
       {hasChildren && (
         <>
-          {/* Spacer for visual separation */}
           <div className="h-16"></div>
-
-          {/* Children Row */}
-          <div className="flex gap-4">
+          <div className="flex gap-5">
             {node.children!.map((child) => (
               <TreeNodeComponent
                 key={child.characterId}
@@ -393,11 +371,7 @@ function TreeNodeComponent(props: TreeNodeProps) {
                 bgColor={bgColor}
                 spoilerMode={spoilerMode}
                 onCharacterClick={onCharacterClick}
-                onPositionUpdate={(childPos) => {
-                  if (onPositionUpdate) {
-                    onPositionUpdate({ ...childPos, parentId: char.id });
-                  }
-                }}
+                onPositionUpdate={onPositionUpdate}
               />
             ))}
           </div>
