@@ -77,7 +77,7 @@ export default function CharacterView({ characterId, onNavigate, onNavigateTo, g
       </header>
 
       <main className="flex-1 flex flex-col relative px-4 md:px-6 lg:px-10 xl:px-12 2xl:px-16 py-4">
-        <div className="relative z-10 flex flex-col items-center max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto w-full">
+        <div className="relative z-10 flex flex-col items-center max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl mx-auto w-full">
           {/* Portrait */}
           <div className="relative mt-2 mb-6">
             <CharacterAvatar character={char} size="xl" className={`hand-drawn-circle border-[3px] ${borderColor}/80 relative z-10`} />
@@ -110,7 +110,7 @@ export default function CharacterView({ characterId, onNavigate, onNavigateTo, g
           </div>
 
           {/* Bio */}
-          <article className="prose prose-stone prose-p:text-justify prose-p:text-ink prose-p:font-medium prose-p:leading-relaxed max-w-none w-full font-body">
+          <article className="prose prose-stone prose-p:text-justify prose-p:text-ink prose-p:font-medium prose-p:leading-relaxed max-w-none lg:max-w-prose xl:max-w-[75ch] w-full font-body mx-auto">
             <p className="mb-4">
               <span className="drop-cap">{char.bio.charAt(0)}</span>{char.bio.slice(1)}
             </p>
@@ -191,7 +191,7 @@ export default function CharacterView({ characterId, onNavigate, onNavigateTo, g
                 House Members
                 <span className="h-px w-8 bg-primary/20"></span>
               </h3>
-              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 justify-items-center">
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4">
                 {houseMembers.map(member => (
                   <button
                     key={member.id}

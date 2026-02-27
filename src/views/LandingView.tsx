@@ -78,7 +78,7 @@ export default function LandingView({ onNavigate, onNavigateTo }: LandingViewPro
           </div>
 
           {/* Search */}
-          <div className="w-full max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg mb-10 relative" ref={searchRef}>
+          <div className="w-full max-w-xs md:max-w-sm lg:max-w-2xl xl:max-w-3xl 2xl:max-w-4xl mb-10 relative" ref={searchRef}>
             <div className="absolute -inset-1 bg-gradient-to-r from-primary/10 via-gold/20 to-primary/10 rounded-lg blur opacity-50 group-hover:opacity-100 transition duration-500"></div>
             <div className="relative ink-border bg-white flex items-center px-4 py-3 shadow-ink transition-transform hover:scale-[1.02]">
               <span className="material-symbols-outlined text-primary/60 text-2xl mr-3">search</span>
@@ -164,7 +164,7 @@ export default function LandingView({ onNavigate, onNavigateTo }: LandingViewPro
               <span className="h-px w-8 bg-primary/20"></span>
             </h3>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
               {featured.map(house => (
                 <HouseCard
                   key={house.id}

@@ -68,7 +68,7 @@ export default function HousesView({ onNavigate, onNavigateTo, goBack }: HousesV
           ))}
         </div>
 
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
           {filteredHouses.map((house) => {
             const colors = colorMap[house.color] || defaultColors;
             const members = house.memberIds.map(id => characters[id]).filter(Boolean);

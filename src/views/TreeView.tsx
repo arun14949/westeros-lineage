@@ -76,7 +76,7 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
             <h2 className="text-[10px] uppercase tracking-widest text-ink-light font-display font-bold mb-1">The Lineage Of</h2>
             <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold font-display italic text-ink mb-2">{house.name}</h1>
             <div className={`w-12 h-1 ${bgColor}/20 mx-auto mb-3 rounded-full`}></div>
-            <p className="text-xs text-ink-light font-body max-w-[280px] mx-auto leading-relaxed">{house.description}</p>
+            <p className="text-xs text-ink-light font-body max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg mx-auto leading-relaxed">{house.description}</p>
             <p className={`text-[11px] ${textColor} font-display font-semibold mt-2 italic`}>"{house.motto}"</p>
           </div>
         </div>
