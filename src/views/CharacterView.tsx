@@ -119,7 +119,12 @@ export default function CharacterView({ characterId, onNavigate, onNavigateTo, g
             {char.spoilerBio && (
               <div className="relative">
                 {!spoilerMode && (
-                  <div className="absolute inset-0 z-20 flex flex-col items-center justify-center backdrop-blur-md bg-background-light/40 rounded-lg gap-2">
+                  <div
+                    className="absolute inset-0 z-20 flex flex-col items-center justify-center backdrop-blur-md bg-background-light/40 rounded-lg gap-2"
+                    style={{
+                      backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(28, 25, 23, 0.03) 10px, rgba(28, 25, 23, 0.03) 20px)',
+                    }}
+                  >
                     <span className="font-ornamental text-3xl text-ink/80 tracking-widest drop-shadow-md">Spoiler</span>
                     <button
                       onClick={() => setSpoilerMode(true)}
