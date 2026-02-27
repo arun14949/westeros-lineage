@@ -18,8 +18,8 @@ export default function SideNav({ currentView, onNavigate }: SideNavProps) {
       {/* Logo Section */}
       <div className="p-6 border-b border-primary/10">
         <div className="text-center">
-          <h1 className="font-header text-lg font-bold text-ink tracking-wide">Westeros</h1>
-          <span className="text-[9px] uppercase tracking-[0.2em] text-primary">Lineage</span>
+          <h1 className="font-header text-base font-bold text-ink tracking-wide leading-tight">House of</h1>
+          <span className="text-sm font-header font-bold text-primary tracking-wide">Westeros</span>
         </div>
       </div>
 

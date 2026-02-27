@@ -51,9 +51,7 @@ export default function HousesView({ onNavigate, onNavigateTo, goBack }: HousesV
             <h1 className="text-lg lg:text-xl xl:text-2xl font-header font-bold text-ink tracking-wide">The Great Houses</h1>
             <span className="text-[10px] uppercase tracking-[0.2em] text-primary">Registry</span>
           </div>
-          <button onClick={() => onNavigate('landing')} className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-colors text-ink-light">
-            <span className="material-symbols-outlined text-[24px]">home</span>
-          </button>
+          <div className="w-10"></div>
         </div>
       </header>
 

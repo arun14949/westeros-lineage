@@ -59,8 +59,8 @@ export default function LandingView({ onNavigate, onNavigateTo }: LandingViewPro
       <header className="sticky top-0 z-20 bg-background-light/95 backdrop-blur-sm border-b border-primary/20 px-4 py-4">
         <div className="flex items-center justify-center">
           <div className="flex flex-col items-center">
-            <span className="font-header text-sm font-bold text-ink tracking-wide">Westeros</span>
-            <span className="text-[9px] uppercase tracking-[0.2em] text-primary">Lineage</span>
+            <span className="font-header text-xs font-bold text-ink tracking-wide leading-tight">House of</span>
+            <span className="text-sm font-header font-bold text-primary tracking-wide">Westeros</span>
           </div>
         </div>
       </header>
@@ -70,7 +70,7 @@ export default function LandingView({ onNavigate, onNavigateTo }: LandingViewPro
           <div className="text-center mb-8 w-full">
             <div className="w-24 h-4 mx-auto mb-4 decoration-flourish"></div>
             <h1 className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-ink tracking-tight leading-tight mb-2">
-              Westeros<br />Lineage
+              House of<br />Westeros
             </h1>
             <p className="font-body italic text-ink-light text-base md:text-lg lg:text-xl xl:text-2xl">
               The Great Houses of the Seven Kingdoms

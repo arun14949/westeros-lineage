@@ -57,31 +57,27 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
           <span className="material-symbols-outlined text-[24px]">arrow_back</span>
         </button>
         <span className={`text-lg font-bold font-display ${textColor}`}>{house.name}</span>
-        <div className="w-10"></div>
+        <label className="flex items-center cursor-pointer">
+          <div className="relative">
+            <input type="checkbox" className="sr-only" checked={spoilerMode} onChange={(e) => setSpoilerMode(e.target.checked)} />
+            <div className={`block w-12 h-6 rounded-full transition-colors ${spoilerMode ? 'bg-gold' : 'bg-ink/20'}`}></div>
+            <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform flex items-center justify-center ${spoilerMode ? 'transform translate-x-6' : ''}`}>
+              {spoilerMode && <span className="material-symbols-outlined text-[10px] text-gold">visibility</span>}
+              {!spoilerMode && <span className="material-symbols-outlined text-[10px] text-ink/40">visibility_off</span>}
+            </div>
+          </div>
+        </label>
       </header>
 
       <main className="flex-1 flex flex-col relative px-4 md:px-6 lg:px-10 xl:px-12 2xl:px-16 py-6 overflow-x-auto overflow-y-auto">
         {/* Header Section */}
-        <div className="flex justify-between items-start mb-6 min-w-max">
+        <div className="flex justify-center items-start mb-6 min-w-max">
           <div className="text-center flex-1">
             <h2 className="text-[10px] uppercase tracking-widest text-ink-light font-display font-bold mb-1">The Lineage Of</h2>
             <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold font-display italic text-ink mb-2">{house.name}</h1>
             <div className={`w-12 h-1 ${bgColor}/20 mx-auto mb-3 rounded-full`}></div>
             <p className="text-xs text-ink-light font-body max-w-[280px] mx-auto leading-relaxed">{house.description}</p>
             <p className={`text-[11px] ${textColor} font-display font-semibold mt-2 italic`}>"{house.motto}"</p>
-          </div>
-          <div className="flex flex-col items-center gap-1 absolute right-4 top-0">
-            <label className="flex items-center cursor-pointer">
-              <div className="relative">
-                <input type="checkbox" className="sr-only" checked={spoilerMode} onChange={(e) => setSpoilerMode(e.target.checked)} />
-                <div className={`block w-12 h-6 rounded-full transition-colors ${spoilerMode ? 'bg-gold' : 'bg-ink/20'}`}></div>
-                <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform flex items-center justify-center ${spoilerMode ? 'transform translate-x-6' : ''}`}>
-                  {spoilerMode && <span className="material-symbols-outlined text-[10px] text-gold">visibility</span>}
-                  {!spoilerMode && <span className="material-symbols-outlined text-[10px] text-ink/40">visibility_off</span>}
-                </div>
-              </div>
-            </label>
-            <span className="text-[10px] font-display text-ink-light">Spoilers</span>
           </div>
         </div>
 
