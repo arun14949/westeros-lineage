@@ -58,7 +58,7 @@ export default function CharacterView({ characterId, onNavigate, onNavigateTo, g
   const houseIcon = house?.icon || 'shield';
 
   return (
-    <div className="flex-1 flex flex-col pb-20 lg:pb-8">
+    <div className="flex-1 flex flex-col pb-20 lg:pb-6 xl:pb-4">
       <header className="sticky top-0 z-20 bg-background-light/90 backdrop-blur-sm px-4 py-3 flex items-center justify-between border-b border-ink/5">
         <button onClick={goBack} className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-ink/5 transition-colors text-ink">
           <span className="material-symbols-outlined text-[24px]">arrow_back</span>
@@ -84,8 +84,8 @@ export default function CharacterView({ characterId, onNavigate, onNavigateTo, g
         </label>
       </div>
 
-      <main className="flex-1 flex flex-col relative px-6 lg:px-10 py-4">
-        <div className="relative z-10 flex flex-col items-center max-w-3xl mx-auto w-full">
+      <main className="flex-1 flex flex-col relative px-4 md:px-6 lg:px-10 xl:px-12 2xl:px-16 py-4">
+        <div className="relative z-10 flex flex-col items-center max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto w-full">
           {/* Portrait */}
           <div className="relative mt-2 mb-6">
             <CharacterAvatar character={char} size="xl" className={`hand-drawn-circle border-[3px] ${borderColor}/80 relative z-10`} />
@@ -101,7 +101,7 @@ export default function CharacterView({ characterId, onNavigate, onNavigateTo, g
 
           {/* Name & Title */}
           <div className="text-center mb-6">
-            <h1 className="text-4xl font-ornamental text-ink mb-1 drop-shadow-ink">{char.name}</h1>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-ornamental text-ink mb-1 drop-shadow-ink">{char.name}</h1>
             {char.alias && (
               <p className="text-sm font-bold text-ink-light italic tracking-wide font-body">"{char.alias}"</p>
             )}
@@ -199,7 +199,7 @@ export default function CharacterView({ characterId, onNavigate, onNavigateTo, g
                 House Members
                 <span className="h-px w-8 bg-primary/20"></span>
               </h3>
-              <div className="flex gap-4 overflow-x-auto pb-2 px-2 no-scrollbar justify-center flex-wrap">
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 justify-items-center">
                 {houseMembers.map(member => (
                   <button
                     key={member.id}

@@ -51,7 +51,7 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
   const bgColor = houseBgColor[house.color] || 'bg-primary';
 
   return (
-    <div className="flex-1 flex flex-col pb-20 lg:pb-8">
+    <div className="flex-1 flex flex-col pb-20 lg:pb-6 xl:pb-4">
       <header className="sticky top-0 z-20 bg-background-light/90 backdrop-blur-sm px-4 py-3 flex items-center justify-between border-b border-ink/5">
         <button onClick={goBack} className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-ink/5 transition-colors text-ink">
           <span className="material-symbols-outlined text-[24px]">arrow_back</span>
@@ -60,12 +60,12 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
         <div className="w-10"></div>
       </header>
 
-      <main className="flex-1 flex flex-col relative px-4 lg:px-10 py-6 overflow-x-auto overflow-y-auto">
+      <main className="flex-1 flex flex-col relative px-4 md:px-6 lg:px-10 xl:px-12 2xl:px-16 py-6 overflow-x-auto overflow-y-auto">
         {/* Header Section */}
         <div className="flex justify-between items-start mb-6 min-w-max">
           <div className="text-center flex-1">
             <h2 className="text-[10px] uppercase tracking-widest text-ink-light font-display font-bold mb-1">The Lineage Of</h2>
-            <h1 className="text-2xl font-bold font-display italic text-ink mb-2">{house.name}</h1>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold font-display italic text-ink mb-2">{house.name}</h1>
             <div className={`w-12 h-1 ${bgColor}/20 mx-auto mb-3 rounded-full`}></div>
             <p className="text-xs text-ink-light font-body max-w-[280px] mx-auto leading-relaxed">{house.description}</p>
             <p className={`text-[11px] ${textColor} font-display font-semibold mt-2 italic`}>"{house.motto}"</p>
@@ -105,7 +105,7 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
             All Members
             <span className="h-px w-8 bg-primary/20"></span>
           </h3>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3">
             {house.memberIds.map(id => {
               const char = characters[id];
               if (!char) return null;

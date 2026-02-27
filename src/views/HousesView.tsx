@@ -41,14 +41,14 @@ export default function HousesView({ onNavigate, onNavigateTo, goBack }: HousesV
   });
 
   return (
-    <div className="flex-1 flex flex-col pb-20 lg:pb-8">
+    <div className="flex-1 flex flex-col pb-20 lg:pb-6 xl:pb-4">
       <header className="sticky top-0 z-20 bg-background-light/95 backdrop-blur-sm border-b border-primary/20 px-4 py-3 shadow-sm">
         <div className="flex items-center justify-between">
           <button onClick={goBack} className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-colors text-ink-light">
             <span className="material-symbols-outlined text-[24px]">arrow_back</span>
           </button>
           <div className="flex flex-col items-center">
-            <h1 className="text-lg font-header font-bold text-ink tracking-wide">The Great Houses</h1>
+            <h1 className="text-lg lg:text-xl xl:text-2xl font-header font-bold text-ink tracking-wide">The Great Houses</h1>
             <span className="text-[10px] uppercase tracking-[0.2em] text-primary">Registry</span>
           </div>
           <button onClick={() => onNavigate('landing')} className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-colors text-ink-light">
@@ -57,7 +57,7 @@ export default function HousesView({ onNavigate, onNavigateTo, goBack }: HousesV
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col p-5 lg:p-10 relative gap-6">
+      <main className="flex-1 flex flex-col p-4 md:p-6 lg:p-10 xl:p-12 2xl:p-16 relative gap-6">
         <div className="relative z-10 flex gap-2 overflow-x-auto pb-2 no-scrollbar">
           {([['all', 'All Houses'], ['royal', 'Royal'], ['alive', 'With Survivors']] as [FilterType, string][]).map(([key, label]) => (
             <button
@@ -70,7 +70,7 @@ export default function HousesView({ onNavigate, onNavigateTo, goBack }: HousesV
           ))}
         </div>
 
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {filteredHouses.map((house) => {
             const colors = colorMap[house.color] || defaultColors;
             const members = house.memberIds.map(id => characters[id]).filter(Boolean);
@@ -93,7 +93,7 @@ export default function HousesView({ onNavigate, onNavigateTo, goBack }: HousesV
                   </div>
                 </div>
                 <div className="relative">
-                  <h2 className={`font-header text-2xl text-ink mb-1 ${colors.groupHoverText} transition-colors uppercase`}>{house.name}</h2>
+                  <h2 className={`font-header text-xl md:text-2xl xl:text-3xl text-ink mb-1 ${colors.groupHoverText} transition-colors uppercase`}>{house.name}</h2>
                   <p className="text-xs text-ink-light italic font-body mb-1">"{house.motto}"</p>
                   <p className="text-[11px] text-ink-light/70 font-body mb-3">{house.seat}</p>
                   <div className={`h-px w-full bg-gradient-to-r ${colors.gradient} to-transparent mb-3`}></div>

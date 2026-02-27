@@ -55,7 +55,7 @@ export default function LandingView({ onNavigate, onNavigateTo }: LandingViewPro
   const featured = houses.filter(h => FEATURED_HOUSES.includes(h.id));
 
   return (
-    <div className="flex-1 flex flex-col pb-20 lg:pb-8">
+    <div className="flex-1 flex flex-col pb-20 lg:pb-6 xl:pb-4">
       <header className="sticky top-0 z-20 bg-background-light/95 backdrop-blur-sm border-b border-primary/20 px-4 py-4">
         <div className="flex items-center justify-center">
           <div className="flex flex-col items-center">
@@ -65,20 +65,20 @@ export default function LandingView({ onNavigate, onNavigateTo }: LandingViewPro
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col p-6 lg:p-10 relative">
+      <main className="flex-1 flex flex-col p-4 md:p-6 lg:p-10 xl:p-12 2xl:p-16 relative">
         <div className="relative z-10 flex flex-col items-center w-full h-full justify-center mt-4 mb-12">
           <div className="text-center mb-8 w-full">
             <div className="w-24 h-4 mx-auto mb-4 decoration-flourish"></div>
-            <h1 className="font-display text-4xl md:text-5xl font-bold text-ink tracking-tight leading-tight mb-2">
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-ink tracking-tight leading-tight mb-2">
               Westeros<br />Lineage
             </h1>
-            <p className="font-body italic text-ink-light text-lg">
+            <p className="font-body italic text-ink-light text-base md:text-lg lg:text-xl xl:text-2xl">
               The Great Houses of the Seven Kingdoms
             </p>
           </div>
 
           {/* Search */}
-          <div className="w-full max-w-xs mb-10 relative" ref={searchRef}>
+          <div className="w-full max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg mb-10 relative" ref={searchRef}>
             <div className="absolute -inset-1 bg-gradient-to-r from-primary/10 via-gold/20 to-primary/10 rounded-lg blur opacity-50 group-hover:opacity-100 transition duration-500"></div>
             <div className="relative ink-border bg-white flex items-center px-4 py-3 shadow-ink transition-transform hover:scale-[1.02]">
               <span className="material-symbols-outlined text-primary/60 text-2xl mr-3">search</span>
@@ -164,7 +164,7 @@ export default function LandingView({ onNavigate, onNavigateTo }: LandingViewPro
               <span className="h-px w-8 bg-primary/20"></span>
             </h3>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
               {featured.map(house => (
                 <HouseCard
                   key={house.id}
@@ -194,7 +194,7 @@ export default function LandingView({ onNavigate, onNavigateTo }: LandingViewPro
               Notable Figures
               <span className="h-px w-8 bg-primary/20"></span>
             </h3>
-            <div className="flex gap-4 overflow-x-auto pb-2 px-2 no-scrollbar justify-center flex-wrap">
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 justify-items-center">
               {['jon-snow', 'daenerys-targaryen', 'tyrion-lannister', 'arya-stark', 'cersei-lannister'].map(id => {
                 const char = characters[id];
                 if (!char) return null;
