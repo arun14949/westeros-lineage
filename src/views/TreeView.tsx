@@ -1,3 +1,4 @@
+import { useRef, useEffect, useState } from 'react';
 import { NavigationState } from '../App';
 import { getHouse, characters, type TreeNode, type House } from '../data';
 
@@ -35,6 +36,9 @@ const houseBgColor: Record<string, string> = {
 
 export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, setSpoilerMode }: TreeViewProps) {
   const house = getHouse(houseId);
+  const [nodePositions, setNodePositions] = useState<NodePosition[]>([]);
+  const treeContainerRef = useRef<HTMLDivElement>(null);
+
   if (!house) {
     return (
       <div className="flex-1 flex items-center justify-center p-6 text-center">
@@ -49,6 +53,77 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
 
   const textColor = houseTextColor[house.color] || 'text-primary';
   const bgColor = houseBgColor[house.color] || 'bg-primary';
+
+  const handlePositionUpdate = (pos: NodePosition) => {
+    setNodePositions(prev => {
+      const filtered = prev.filter(p => p.id !== pos.id);
+      return [...filtered, pos];
+    });
+  };
+
+  const renderConnections = () => {
+    if (nodePositions.length === 0) return null;
+
+    const paths: React.ReactElement[] = [];
+
+    nodePositions.forEach(node => {
+      // Draw line to parent
+      if (node.parentId) {
+        const parent = nodePositions.find(p => p.id === node.parentId);
+        if (parent) {
+          const startX = parent.x + parent.width / 2;
+          const startY = parent.y + parent.height;
+          const endX = node.x + node.width / 2;
+          const endY = node.y;
+
+          const controlY = startY + (endY - startY) / 2;
+
+          const path = `M ${startX} ${startY} C ${startX} ${controlY}, ${endX} ${controlY}, ${endX} ${endY}`;
+
+          paths.push(
+            <path
+              key={`parent-${node.id}`}
+              d={path}
+              stroke="rgb(28, 25, 23)"
+              strokeWidth="1.5"
+              strokeOpacity="0.2"
+              fill="none"
+              strokeLinecap="round"
+            />
+          );
+        }
+      }
+
+      // Draw line to spouse
+      if (node.spouseId) {
+        const spouse = nodePositions.find(p => p.id === node.spouseId);
+        if (spouse && node.x < spouse.x) { // Only draw once
+          const startX = node.x + node.width;
+          const startY = node.y + node.height / 2;
+          const endX = spouse.x;
+          const endY = spouse.y + spouse.height / 2;
+
+          const controlX = startX + (endX - startX) / 2;
+
+          const path = `M ${startX} ${startY} C ${controlX} ${startY}, ${controlX} ${endY}, ${endX} ${endY}`;
+
+          paths.push(
+            <path
+              key={`spouse-${node.id}-${spouse.id}`}
+              d={path}
+              stroke="rgb(28, 25, 23)"
+              strokeWidth="1.5"
+              strokeOpacity="0.2"
+              fill="none"
+              strokeLinecap="round"
+            />
+          );
+        }
+      }
+    });
+
+    return paths;
+  };
 
   return (
     <div className="flex-1 flex flex-col pb-20 lg:pb-6 xl:pb-4">
@@ -82,7 +157,12 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
         </div>
 
         {/* Tree - centered with horizontal scroll */}
-        <div className="flex justify-center min-w-max pb-6">
+        <div ref={treeContainerRef} className="relative flex justify-center min-w-max pb-6">
+          {/* SVG Connector Layer */}
+          <svg className="absolute inset-0 pointer-events-none" style={{ width: '100%', height: '100%' }}>
+            {renderConnections()}
+          </svg>
+
           <TreeNodeComponent
             node={house.tree}
             house={house}
@@ -90,6 +170,7 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
             bgColor={bgColor}
             spoilerMode={spoilerMode}
             onCharacterClick={(id) => onNavigateTo({ view: 'character', characterId: id })}
+            onPositionUpdate={handlePositionUpdate}
             isRoot
           />
         </div>
@@ -137,6 +218,16 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
   );
 }
 
+interface NodePosition {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  parentId?: string;
+  spouseId?: string;
+}
+
 interface TreeNodeProps {
   node: TreeNode;
   house: House;
@@ -145,17 +236,70 @@ interface TreeNodeProps {
   spoilerMode: boolean;
   onCharacterClick: (id: string) => void;
   isRoot?: boolean;
+  onPositionUpdate?: (pos: NodePosition) => void;
 }
 
 function TreeNodeComponent(props: TreeNodeProps) {
-  const { node, house, textColor, bgColor, spoilerMode, onCharacterClick, isRoot = false } = props;
+  const { node, house, textColor, bgColor, spoilerMode, onCharacterClick, isRoot = false, onPositionUpdate } = props;
   const char = characters[node.characterId];
   const spouse = node.spouse ? characters[node.spouse] : null;
+  const cardRef = useRef<HTMLButtonElement>(null);
+  const spouseCardRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!cardRef.current || !onPositionUpdate) return;
+
+    const updatePosition = () => {
+      const rect = cardRef.current!.getBoundingClientRect();
+      const container = cardRef.current!.closest('.relative');
+      const containerRect = container?.getBoundingClientRect();
+
+      if (containerRect) {
+        onPositionUpdate({
+          id: char.id,
+          x: rect.left - containerRect.left,
+          y: rect.top - containerRect.top,
+          width: rect.width,
+          height: rect.height,
+          spouseId: spouse?.id,
+        });
+      }
+    };
+
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    return () => window.removeEventListener('resize', updatePosition);
+  }, [char.id, spouse?.id, onPositionUpdate]);
+
+  useEffect(() => {
+    if (!spouseCardRef.current || !spouse || !onPositionUpdate) return;
+
+    const updatePosition = () => {
+      const rect = spouseCardRef.current!.getBoundingClientRect();
+      const container = spouseCardRef.current!.closest('.relative');
+      const containerRect = container?.getBoundingClientRect();
+
+      if (containerRect) {
+        onPositionUpdate({
+          id: spouse.id,
+          x: rect.left - containerRect.left,
+          y: rect.top - containerRect.top,
+          width: rect.width,
+          height: rect.height,
+          parentId: char.id,
+          spouseId: char.id,
+        });
+      }
+    };
+
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    return () => window.removeEventListener('resize', updatePosition);
+  }, [spouse?.id, char.id, onPositionUpdate]);
 
   if (!char) return null;
 
   const hasChildren = node.children && node.children.length > 0;
-  const childCount = node.children?.length || 0;
 
   return (
     <div className="flex flex-col items-center">
@@ -163,6 +307,7 @@ function TreeNodeComponent(props: TreeNodeProps) {
       <div className="flex items-center gap-2 relative z-10">
         {/* Main Character Card */}
         <button
+          ref={cardRef}
           onClick={() => onCharacterClick(char.id)}
           className={`${isRoot ? 'bg-white shadow-md' : 'bg-parchment/50 shadow-sm'} p-3 rounded-xl border border-parchment-dark flex flex-col items-center w-24 hover:shadow-lg hover:border-primary/30 transition-all cursor-pointer group`}
         >
@@ -190,6 +335,7 @@ function TreeNodeComponent(props: TreeNodeProps) {
               <div className="w-3 h-px bg-ink/20"></div>
             </div>
             <button
+              ref={spouseCardRef}
               onClick={() => onCharacterClick(spouse.id)}
               className="bg-parchment/30 p-2.5 rounded-xl border border-parchment-dark/50 flex flex-col items-center w-20 hover:shadow-md hover:border-primary/30 transition-all cursor-pointer group"
             >
@@ -213,30 +359,8 @@ function TreeNodeComponent(props: TreeNodeProps) {
       {/* Children */}
       {hasChildren && (
         <>
-          {/* Vertical line down from parent */}
-          <div className="w-px h-8 bg-ink/20"></div>
-
-          {/* Horizontal connector line */}
-          {childCount > 1 ? (
-            <div className="relative flex justify-center" style={{ width: `${childCount * 112}px` }}>
-              {/* Horizontal line */}
-              <div className="absolute top-0 h-px bg-ink/20" style={{ left: '56px', right: '56px' }}></div>
-              {/* Vertical drops to each child */}
-              {node.children!.map((_, idx) => {
-                const leftOffset = 56 + (idx * 112);
-                return (
-                  <div
-                    key={idx}
-                    className="absolute top-0 w-px h-8 bg-ink/20"
-                    style={{ left: `${leftOffset}px` }}
-                  ></div>
-                );
-              })}
-              <div className="h-8"></div>
-            </div>
-          ) : (
-            <div className="w-px h-8 bg-ink/20"></div>
-          )}
+          {/* Spacer for visual separation */}
+          <div className="h-16"></div>
 
           {/* Children Row */}
           <div className="flex gap-4">
@@ -249,6 +373,11 @@ function TreeNodeComponent(props: TreeNodeProps) {
                 bgColor={bgColor}
                 spoilerMode={spoilerMode}
                 onCharacterClick={onCharacterClick}
+                onPositionUpdate={(childPos) => {
+                  if (onPositionUpdate) {
+                    onPositionUpdate({ ...childPos, parentId: char.id });
+                  }
+                }}
               />
             ))}
           </div>
