@@ -61,6 +61,11 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
     });
   };
 
+  // Clear positions when house changes to prevent stale data
+  useEffect(() => {
+    setNodePositions([]);
+  }, [house.id]);
+
   const renderConnections = () => {
     if (nodePositions.length === 0) return null;
 
@@ -159,9 +164,24 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
         {/* Tree - centered with horizontal scroll */}
         <div ref={treeContainerRef} className="relative flex justify-center min-w-max pb-6">
           {/* SVG Connector Layer */}
-          <svg className="absolute inset-0 pointer-events-none" style={{ width: '100%', height: '100%' }}>
-            {renderConnections()}
-          </svg>
+          {nodePositions.length > 0 && (() => {
+            const minX = Math.min(...nodePositions.map(n => n.x));
+            const minY = Math.min(...nodePositions.map(n => n.y));
+            const maxX = Math.max(...nodePositions.map(n => n.x + n.width));
+            const maxY = Math.max(...nodePositions.map(n => n.y + n.height));
+            const width = maxX - minX;
+            const height = maxY - minY;
+
+            return (
+              <svg
+                className="absolute top-0 left-0 pointer-events-none z-0"
+                viewBox={`${minX} ${minY} ${width} ${height}`}
+                style={{ width: '100%', height: '100%', overflow: 'visible' }}
+              >
+                {renderConnections()}
+              </svg>
+            );
+          })()}
 
           <TreeNodeComponent
             node={house.tree}
@@ -251,7 +271,7 @@ function TreeNodeComponent(props: TreeNodeProps) {
 
     const updatePosition = () => {
       const rect = cardRef.current!.getBoundingClientRect();
-      const container = cardRef.current!.closest('.relative');
+      const container = cardRef.current!.closest('.relative.flex.justify-center.min-w-max');
       const containerRect = container?.getBoundingClientRect();
 
       if (containerRect) {
@@ -276,7 +296,7 @@ function TreeNodeComponent(props: TreeNodeProps) {
 
     const updatePosition = () => {
       const rect = spouseCardRef.current!.getBoundingClientRect();
-      const container = spouseCardRef.current!.closest('.relative');
+      const container = spouseCardRef.current!.closest('.relative.flex.justify-center.min-w-max');
       const containerRect = container?.getBoundingClientRect();
 
       if (containerRect) {
@@ -309,7 +329,7 @@ function TreeNodeComponent(props: TreeNodeProps) {
         <button
           ref={cardRef}
           onClick={() => onCharacterClick(char.id)}
-          className={`${isRoot ? 'bg-white shadow-md' : 'bg-parchment/50 shadow-sm'} p-3 rounded-xl border border-parchment-dark flex flex-col items-center w-24 hover:shadow-lg hover:border-primary/30 transition-all cursor-pointer group`}
+          className={`${isRoot ? 'bg-white shadow-md' : 'bg-parchment/50 shadow-sm'} p-3 rounded-xl border border-parchment-dark flex flex-col items-center w-28 hover:shadow-lg hover:border-primary/30 transition-all cursor-pointer group`}
         >
           <div className="relative mb-2">
             <div className="w-14 h-14 rounded-full bg-gradient-to-br from-parchment to-parchment-dark border-2 border-ink/10 group-hover:border-primary/40 transition-colors flex items-center justify-center">
@@ -321,9 +341,9 @@ function TreeNodeComponent(props: TreeNodeProps) {
               </div>
             )}
           </div>
-          <h3 className="font-display font-bold text-ink text-xs text-center leading-tight group-hover:text-primary transition-colors">{char.name.split(' ')[0]}</h3>
-          {char.alias && <p className="text-[8px] text-ink-light/70 italic mt-0.5">{char.alias}</p>}
-          <p className="text-[8px] text-ink-light font-body italic mt-0.5 text-center leading-tight line-clamp-1">{char.title.split(',')[0]}</p>
+          <h3 className="font-display font-bold text-ink text-sm text-center leading-tight group-hover:text-primary transition-colors">{char.name.split(' ')[0]}</h3>
+          {char.alias && <p className="text-[10px] text-ink-light/70 italic mt-0.5">{char.alias}</p>}
+          <p className="text-[11px] text-ink-light font-body italic mt-0.5 text-center leading-tight line-clamp-1">{char.title.split(',')[0]}</p>
         </button>
 
         {/* Spouse */}
@@ -331,16 +351,16 @@ function TreeNodeComponent(props: TreeNodeProps) {
           <>
             <div className="flex items-center gap-1">
               <div className="w-3 h-px bg-ink/20"></div>
-              <span className="text-[8px] text-ink-light/50 italic">m.</span>
+              <span className="text-[10px] text-ink-light/50 italic">m.</span>
               <div className="w-3 h-px bg-ink/20"></div>
             </div>
             <button
               ref={spouseCardRef}
               onClick={() => onCharacterClick(spouse.id)}
-              className="bg-parchment/30 p-2.5 rounded-xl border border-parchment-dark/50 flex flex-col items-center w-20 hover:shadow-md hover:border-primary/30 transition-all cursor-pointer group"
+              className="bg-parchment/30 p-2.5 rounded-xl border border-parchment-dark/50 flex flex-col items-center w-28 hover:shadow-md hover:border-primary/30 transition-all cursor-pointer group"
             >
               <div className="relative mb-1.5">
-                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-parchment to-parchment-dark border-2 border-ink/10 group-hover:border-primary/40 transition-colors flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-parchment to-parchment-dark border-2 border-ink/10 group-hover:border-primary/40 transition-colors flex items-center justify-center">
                   <span className={`material-symbols-outlined text-2xl ${textColor} opacity-60`}>person</span>
                 </div>
                 {spoilerMode && spouse.isDead && (
@@ -349,8 +369,8 @@ function TreeNodeComponent(props: TreeNodeProps) {
                   </div>
                 )}
               </div>
-              <h3 className="font-display font-bold text-ink text-[10px] text-center leading-tight group-hover:text-primary transition-colors">{spouse.name.split(' ')[0]}</h3>
-              <p className="text-[7px] text-ink-light font-body italic mt-0.5 text-center leading-tight line-clamp-1">{spouse.title.split(',')[0]}</p>
+              <h3 className="font-display font-bold text-ink text-sm text-center leading-tight group-hover:text-primary transition-colors">{spouse.name.split(' ')[0]}</h3>
+              <p className="text-[10px] text-ink-light font-body italic mt-0.5 text-center leading-tight line-clamp-1">{spouse.title.split(',')[0]}</p>
             </button>
           </>
         )}

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { type Character } from '../data';
 
 const houseColors: Record<string, string> = {
@@ -19,6 +20,7 @@ interface CharacterAvatarProps {
 }
 
 export default function CharacterAvatar({ character, size = 'md', className = '' }: CharacterAvatarProps) {
+  const [imageError, setImageError] = useState(false);
   const gradient = houseColors[character.house] || 'from-parchment to-parchment-dark';
 
   const sizeClasses = {
@@ -35,9 +37,21 @@ export default function CharacterAvatar({ character, size = 'md', className = ''
     xl: 'border-[3px]',
   };
 
+  const showImage = character.image && !imageError;
+
   return (
-    <div className={`rounded-full bg-gradient-to-br ${gradient} ${sizeClasses[size]} ${borderSizes[size]} border-white/20 flex items-center justify-center shadow-sm ${className}`}>
-      <span className="material-symbols-outlined text-white/90" style={{ fontSize: 'inherit' }}>person</span>
+    <div className={`rounded-full overflow-hidden ${showImage ? 'bg-parchment' : `bg-gradient-to-br ${gradient}`} ${sizeClasses[size]} ${borderSizes[size]} border-white/20 flex items-center justify-center shadow-sm ${className}`}>
+      {showImage ? (
+        <img
+          src={character.image}
+          alt={character.name}
+          className="w-full h-full object-cover"
+          onError={() => setImageError(true)}
+          loading="lazy"
+        />
+      ) : (
+        <span className="material-symbols-outlined text-white/90" style={{ fontSize: 'inherit' }}>person</span>
+      )}
     </div>
   );
 }
