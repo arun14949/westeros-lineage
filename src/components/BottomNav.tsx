@@ -14,8 +14,8 @@ const navItems: { view: ViewState; icon: string; label: string }[] = [
 
 export default function BottomNav({ currentView, onNavigate }: BottomNavProps) {
   return (
-    <nav className="sticky bottom-0 z-30 bg-white/90 backdrop-blur-md border-t border-primary/10 pb-6 pt-2 px-4 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.05)]">
-      <div className="flex items-center justify-around">
+    <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/90 backdrop-blur-md border-t border-primary/10 pb-6 pt-2 px-4 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.05)] lg:hidden">
+      <div className="flex items-center justify-around max-w-md mx-auto">
         {navItems.map(({ view, icon, label }) => (
           <button
             key={view}

@@ -41,7 +41,7 @@ export default function HousesView({ onNavigate, onNavigateTo, goBack }: HousesV
   });
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col pb-20 lg:pb-8">
       <header className="sticky top-0 z-20 bg-background-light/95 backdrop-blur-sm border-b border-primary/20 px-4 py-3 shadow-sm">
         <div className="flex items-center justify-between">
           <button onClick={goBack} className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-colors text-ink-light">
@@ -57,7 +57,7 @@ export default function HousesView({ onNavigate, onNavigateTo, goBack }: HousesV
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col p-5 relative gap-6">
+      <main className="flex-1 flex flex-col p-5 lg:p-10 relative gap-6">
         <div className="relative z-10 flex gap-2 overflow-x-auto pb-2 no-scrollbar">
           {([['all', 'All Houses'], ['royal', 'Royal'], ['alive', 'With Survivors']] as [FilterType, string][]).map(([key, label]) => (
             <button
@@ -70,7 +70,7 @@ export default function HousesView({ onNavigate, onNavigateTo, goBack }: HousesV
           ))}
         </div>
 
-        <div className="relative z-10 grid grid-cols-1 gap-6">
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
           {filteredHouses.map((house) => {
             const colors = colorMap[house.color] || defaultColors;
             const members = house.memberIds.map(id => characters[id]).filter(Boolean);
@@ -98,7 +98,7 @@ export default function HousesView({ onNavigate, onNavigateTo, goBack }: HousesV
                   <p className="text-[11px] text-ink-light/70 font-body mb-3">{house.seat}</p>
                   <div className={`h-px w-full bg-gradient-to-r ${colors.gradient} to-transparent mb-3`}></div>
                   <div className="flex justify-between items-center">
-                    <div className="flex -space-x-2">
+                    <div className="flex -space-x-2 p-1">
                       {members.slice(0, 3).map((member, i) => (
                         <button
                           key={i}

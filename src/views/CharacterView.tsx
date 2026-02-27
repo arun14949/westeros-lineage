@@ -58,7 +58,7 @@ export default function CharacterView({ characterId, onNavigate, onNavigateTo, g
   const houseIcon = house?.icon || 'shield';
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col pb-20 lg:pb-8">
       <header className="sticky top-0 z-20 bg-background-light/90 backdrop-blur-sm px-4 py-3 flex items-center justify-between border-b border-ink/5">
         <button onClick={goBack} className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-ink/5 transition-colors text-ink">
           <span className="material-symbols-outlined text-[24px]">arrow_back</span>
@@ -73,7 +73,7 @@ export default function CharacterView({ characterId, onNavigate, onNavigateTo, g
       </header>
 
       {/* Spoiler Toggle */}
-      <div className="w-full flex justify-center py-2 bg-background-light border-b border-ink/5">
+      <div className="w-full flex justify-center py-2 bg-background-light border-b border-ink/5 sticky top-[57px] z-10">
         <label className="flex items-center cursor-pointer gap-2">
           <div className="relative">
             <input type="checkbox" className="sr-only" checked={spoilerMode} onChange={(e) => setSpoilerMode(e.target.checked)} />
@@ -84,8 +84,8 @@ export default function CharacterView({ characterId, onNavigate, onNavigateTo, g
         </label>
       </div>
 
-      <main className="flex-1 flex flex-col relative px-6 py-4">
-        <div className="relative z-10 flex flex-col items-center">
+      <main className="flex-1 flex flex-col relative px-6 lg:px-10 py-4">
+        <div className="relative z-10 flex flex-col items-center max-w-3xl mx-auto w-full">
           {/* Portrait */}
           <div className="relative mt-2 mb-6">
             <CharacterAvatar character={char} size="xl" className={`hand-drawn-circle border-[3px] ${borderColor}/80 relative z-10`} />
@@ -199,15 +199,15 @@ export default function CharacterView({ characterId, onNavigate, onNavigateTo, g
                 House Members
                 <span className="h-px w-8 bg-primary/20"></span>
               </h3>
-              <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar justify-center flex-wrap">
+              <div className="flex gap-4 overflow-x-auto pb-2 px-2 no-scrollbar justify-center flex-wrap">
                 {houseMembers.map(member => (
                   <button
                     key={member.id}
-                    className="flex flex-col items-center gap-1.5 group shrink-0"
+                    className="flex flex-col items-center gap-1.5 group shrink-0 p-1"
                     onClick={() => onNavigateTo({ view: 'character', characterId: member.id })}
                   >
                     <div className="relative">
-                      <CharacterAvatar character={member} size="md" className="group-hover:ring-2 group-hover:ring-primary/50 transition-all" />
+                      <CharacterAvatar character={member} size="md" className="group-hover:ring-2 group-hover:ring-primary/50 transition-all group-hover:scale-105" />
                       {spoilerMode && member.isDead && (
                         <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-crimson rounded-full flex items-center justify-center border border-white">
                           <span className="material-symbols-outlined text-white text-[8px]">skull</span>

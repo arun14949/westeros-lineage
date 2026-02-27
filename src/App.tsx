@@ -37,7 +37,7 @@ export default function App() {
   }, [navigate]);
 
   return (
-    <div className="relative flex h-auto min-h-screen w-full flex-col bg-background-light text-ink overflow-x-hidden max-w-md mx-auto shadow-2xl border-x border-parchment-dark font-body">
+    <div className="relative flex h-auto min-h-screen w-full flex-col bg-background-light text-ink overflow-x-hidden max-w-md lg:max-w-4xl mx-auto shadow-2xl border-x border-parchment-dark font-body">
       <div className="absolute inset-0 opacity-40 pointer-events-none bg-paper-texture z-0 mix-blend-multiply"></div>
 
       <div className="relative z-10 flex-1 flex flex-col">

@@ -55,26 +55,17 @@ export default function LandingView({ onNavigate, onNavigateTo }: LandingViewPro
   const featured = houses.filter(h => FEATURED_HOUSES.includes(h.id));
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col pb-20 lg:pb-8">
       <header className="sticky top-0 z-20 bg-background-light/95 backdrop-blur-sm border-b border-primary/20 px-4 py-4">
-        <div className="flex items-center justify-between">
-          <button className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-colors text-primary">
-            <span className="material-symbols-outlined text-[28px]">menu</span>
-          </button>
+        <div className="flex items-center justify-center">
           <div className="flex flex-col items-center">
             <span className="font-header text-sm font-bold text-ink tracking-wide">Westeros</span>
             <span className="text-[9px] uppercase tracking-[0.2em] text-primary">Lineage</span>
           </div>
-          <button
-            onClick={() => onNavigate('houses')}
-            className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-colors text-primary"
-          >
-            <span className="material-symbols-outlined text-[24px]">shield</span>
-          </button>
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col p-6 relative">
+      <main className="flex-1 flex flex-col p-6 lg:p-10 relative">
         <div className="relative z-10 flex flex-col items-center w-full h-full justify-center mt-4 mb-12">
           <div className="text-center mb-8 w-full">
             <div className="w-24 h-4 mx-auto mb-4 decoration-flourish"></div>
@@ -173,7 +164,7 @@ export default function LandingView({ onNavigate, onNavigateTo }: LandingViewPro
               <span className="h-px w-8 bg-primary/20"></span>
             </h3>
 
-            <div className="grid grid-cols-1 gap-5">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {featured.map(house => (
                 <HouseCard
                   key={house.id}
@@ -203,18 +194,18 @@ export default function LandingView({ onNavigate, onNavigateTo }: LandingViewPro
               Notable Figures
               <span className="h-px w-8 bg-primary/20"></span>
             </h3>
-            <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar justify-center flex-wrap">
+            <div className="flex gap-4 overflow-x-auto pb-2 px-2 no-scrollbar justify-center flex-wrap">
               {['jon-snow', 'daenerys-targaryen', 'tyrion-lannister', 'arya-stark', 'cersei-lannister'].map(id => {
                 const char = characters[id];
                 if (!char) return null;
                 return (
                   <button
                     key={id}
-                    className="flex flex-col items-center gap-2 group shrink-0"
+                    className="flex flex-col items-center gap-2 group shrink-0 p-1"
                     onClick={() => onNavigateTo({ view: 'character', characterId: id })}
                   >
                     <div className="relative">
-                      <CharacterAvatar character={char} size="lg" className="group-hover:ring-2 group-hover:ring-primary/50 transition-all" />
+                      <CharacterAvatar character={char} size="lg" className="group-hover:ring-2 group-hover:ring-primary/50 transition-all group-hover:scale-105" />
                       {char.isDead && (
                         <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-crimson rounded-full flex items-center justify-center border border-white">
                           <span className="material-symbols-outlined text-white text-[8px]">skull</span>
