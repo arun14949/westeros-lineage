@@ -76,6 +76,19 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
     setNodePositions([]);
   }, [house.id]);
 
+  // Center the tree horizontally on the root node after render
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const main = treeContainerRef.current?.closest('main');
+      const tree = treeContainerRef.current;
+      if (main && tree) {
+        const scrollLeft = (tree.scrollWidth - main.clientWidth) / 2;
+        main.scrollLeft = Math.max(0, scrollLeft);
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [house.id]);
+
   // Derive connections from tree structure, NOT from position data
   const renderConnections = () => {
     if (nodePositions.length === 0) return null;
@@ -141,9 +154,9 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
         </label>
       </header>
 
-      <main className="flex-1 flex flex-col relative px-4 md:px-6 lg:px-10 xl:px-12 2xl:px-16 py-6 overflow-x-auto overflow-y-auto">
+      <main className="flex-1 flex flex-col relative px-4 md:px-6 lg:px-10 xl:px-12 2xl:px-16 py-6 overflow-x-auto">
         {/* Header Section */}
-        <div className="flex justify-center items-start mb-6 min-w-max">
+        <div className="flex justify-center items-start mb-6">
           <div className="text-center flex-1">
             <h2 className="text-[10px] uppercase tracking-widest text-ink-light font-display font-bold mb-1">The Lineage Of</h2>
             <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold font-display italic text-ink mb-2">{house.name}</h1>

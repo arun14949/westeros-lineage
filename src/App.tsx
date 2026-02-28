@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import LandingView from './views/LandingView';
 import HousesView from './views/HousesView';
 import CharacterView from './views/CharacterView';
@@ -36,6 +36,11 @@ export default function App() {
   const navigateToView = useCallback((view: ViewState) => {
     navigate({ view });
   }, [navigate]);
+
+  // Scroll to top on every navigation change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [nav]);
 
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col bg-background-light text-ink overflow-x-hidden max-w-md md:max-w-2xl mx-auto lg:mx-0 lg:max-w-none lg:w-[calc(100%-16rem)] xl:w-[calc(100%-18rem)] shadow-2xl border-x border-parchment-dark font-body lg:ml-64 xl:ml-72">
