@@ -3,6 +3,8 @@ import { ViewState } from '../App';
 interface SideNavProps {
   currentView: ViewState;
   onNavigate: (view: ViewState) => void;
+  spoilerMode: boolean;
+  setSpoilerMode: (mode: boolean) => void;
 }
 
 const navItems: { view: ViewState; icon: string; label: string }[] = [
@@ -12,7 +14,7 @@ const navItems: { view: ViewState; icon: string; label: string }[] = [
   { view: 'character', icon: 'menu_book', label: 'Chronicles' },
 ];
 
-export default function SideNav({ currentView, onNavigate }: SideNavProps) {
+export default function SideNav({ currentView, onNavigate, spoilerMode, setSpoilerMode }: SideNavProps) {
   return (
     <nav className="hidden lg:flex fixed left-0 top-0 h-full w-64 xl:w-72 bg-parchment/95 backdrop-blur-sm border-r-2 border-primary/20 flex-col z-30 shadow-scroll">
       {/* Logo Section */}
@@ -41,9 +43,27 @@ export default function SideNav({ currentView, onNavigate }: SideNavProps) {
         ))}
       </div>
 
+      {/* Spoiler Toggle */}
+      <div className="px-6 py-4 border-t border-primary/10">
+        <label className="flex items-center justify-between cursor-pointer group">
+          <div>
+            <span className="font-display text-sm font-semibold text-ink">Spoilers</span>
+            <p className="text-[10px] text-ink-light/60 mt-0.5">Show deaths &amp; secrets</p>
+          </div>
+          <div className="relative">
+            <input type="checkbox" className="sr-only" checked={spoilerMode} onChange={(e) => setSpoilerMode(e.target.checked)} />
+            <div className={`block w-11 h-6 rounded-full transition-colors ${spoilerMode ? 'bg-gold' : 'bg-ink/20'}`}></div>
+            <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform flex items-center justify-center ${spoilerMode ? 'transform translate-x-5' : ''}`}>
+              {spoilerMode && <span className="material-symbols-outlined text-[10px] text-gold">visibility</span>}
+              {!spoilerMode && <span className="material-symbols-outlined text-[10px] text-ink/40">visibility_off</span>}
+            </div>
+          </div>
+        </label>
+      </div>
+
       {/* Version Footer */}
       <div className="p-4 border-t border-primary/10 text-center">
-        <p className="text-[10px] text-ink-light/40 font-display tracking-wider">Version 1.0.0</p>
+        <p className="text-[10px] text-ink-light/40 font-display tracking-wider">Version 1.1.0</p>
       </div>
     </nav>
   );

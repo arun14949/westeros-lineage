@@ -48,6 +48,7 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
   const house = getHouse(houseId);
   const [nodePositions, setNodePositions] = useState<NodePosition[]>([]);
   const treeContainerRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   if (!house) {
     return (
@@ -79,13 +80,18 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
   // Center the tree horizontally on the root node after render
   useEffect(() => {
     const timer = setTimeout(() => {
-      const main = treeContainerRef.current?.closest('main');
-      const tree = treeContainerRef.current;
-      if (main && tree) {
-        const scrollLeft = (tree.scrollWidth - main.clientWidth) / 2;
-        main.scrollLeft = Math.max(0, scrollLeft);
+      const scrollEl = scrollContainerRef.current;
+      if (!scrollEl) return;
+      // Find the root card (first button in the tree) and center on it
+      const rootCard = scrollEl.querySelector('button');
+      if (rootCard) {
+        const scrollElRect = scrollEl.getBoundingClientRect();
+        const rootRect = rootCard.getBoundingClientRect();
+        const rootCenter = rootRect.left + rootRect.width / 2 - scrollElRect.left + scrollEl.scrollLeft;
+        const viewCenter = scrollEl.clientWidth / 2;
+        scrollEl.scrollLeft = rootCenter - viewCenter;
       }
-    }, 100);
+    }, 200);
     return () => clearTimeout(timer);
   }, [house.id]);
 
@@ -142,7 +148,7 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
           <span className="material-symbols-outlined text-[24px]">arrow_back</span>
         </button>
         <span className={`text-lg font-bold font-display ${textColor}`}>{house.name}</span>
-        <label className="flex items-center cursor-pointer">
+        <label className="flex items-center cursor-pointer lg:hidden">
           <div className="relative">
             <input type="checkbox" className="sr-only" checked={spoilerMode} onChange={(e) => setSpoilerMode(e.target.checked)} />
             <div className={`block w-12 h-6 rounded-full transition-colors ${spoilerMode ? 'bg-gold' : 'bg-ink/20'}`}></div>
@@ -152,11 +158,12 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
             </div>
           </div>
         </label>
+        <div className="w-10 hidden lg:block"></div>
       </header>
 
-      <main className="flex-1 flex flex-col relative px-4 md:px-6 lg:px-10 xl:px-12 2xl:px-16 py-6 overflow-x-auto">
+      <main className="flex-1 flex flex-col relative py-6">
         {/* Header Section */}
-        <div className="flex justify-center items-start mb-6">
+        <div className="flex justify-center items-start mb-6 px-4 md:px-6 lg:px-10 xl:px-12 2xl:px-16">
           <div className="text-center flex-1">
             <h2 className="text-[10px] uppercase tracking-widest text-ink-light font-display font-bold mb-1">The Lineage Of</h2>
             <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold font-display italic text-ink mb-2">{house.name}</h1>
@@ -166,7 +173,8 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
           </div>
         </div>
 
-        {/* Tree - centered with horizontal scroll */}
+        {/* Tree - independently scrollable */}
+        <div ref={scrollContainerRef} className="overflow-x-auto px-4 md:px-6 lg:px-10 xl:px-12 2xl:px-16">
         <div ref={treeContainerRef} className="relative flex justify-center min-w-max pb-6">
           {/* SVG Connector Layer */}
           {nodePositions.length > 0 && (() => {
@@ -205,9 +213,10 @@ export default function TreeView({ houseId, onNavigateTo, goBack, spoilerMode, s
             isRoot
           />
         </div>
+        </div>
 
         {/* Members List */}
-        <div className="mt-6 mb-4">
+        <div className="mt-6 mb-4 px-4 md:px-6 lg:px-10 xl:px-12 2xl:px-16">
           <h3 className="font-display text-center text-sm uppercase tracking-[0.2em] text-primary/70 mb-5 font-bold flex items-center justify-center gap-4">
             <span className="h-px w-8 bg-primary/20"></span>
             All Members
@@ -346,9 +355,12 @@ function TreeNodeComponent(props: TreeNodeProps) {
         {spouse && (
           <>
             <div className="flex items-center gap-1">
-              <div className="w-4 h-px bg-ink/20"></div>
-              <span className="text-xs text-ink-light/50 italic">m.</span>
-              <div className="w-4 h-px bg-ink/20"></div>
+              <div className="w-3 h-px bg-ink/15"></div>
+              <svg width="16" height="12" viewBox="0 0 16 12" className="text-ink-light/40 shrink-0">
+                <circle cx="5.5" cy="6" r="4" fill="none" stroke="currentColor" strokeWidth="1.2"/>
+                <circle cx="10.5" cy="6" r="4" fill="none" stroke="currentColor" strokeWidth="1.2"/>
+              </svg>
+              <div className="w-3 h-px bg-ink/15"></div>
             </div>
             <button
               ref={spouseCardRef}

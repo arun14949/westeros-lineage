@@ -356,6 +356,17 @@ export const characters: Record<string, Character> = {
   },
 
   // ── HOUSE BARATHEON ──────────────────────────────────────────────────────
+  'steffon-baratheon': {
+    id: 'steffon-baratheon',
+    name: 'Steffon Baratheon',
+    title: 'Lord of Storm\'s End',
+    house: 'baratheon',
+    image: '/images/steffon-baratheon.png',
+    isDead: true,
+    bio: 'Lord Steffon Baratheon was the Lord of Storm\'s End and father of Robert, Stannis, and Renly. A loyal cousin and friend to King Aerys II Targaryen, he was sent across the Narrow Sea to find a Valyrian bride for Prince Rhaegar.',
+    spoilerBio: 'Steffon and his wife Cassana died when their ship broke apart in Shipbreaker Bay within sight of Storm\'s End. His son Stannis watched from the castle walls as the ship sank, an event that shaped his grim and unforgiving worldview.',
+    tags: ['baratheon', 'lord', 'deceased'],
+  },
   'robert-baratheon': {
     id: 'robert-baratheon',
     name: 'Robert Baratheon',
@@ -406,6 +417,17 @@ export const characters: Record<string, Character> = {
   },
 
   // ── HOUSE GREYJOY ────────────────────────────────────────────────────────
+  'quellon-greyjoy': {
+    id: 'quellon-greyjoy',
+    name: 'Quellon Greyjoy',
+    title: 'Lord of the Iron Islands',
+    house: 'greyjoy',
+    image: '/images/quellon-greyjoy.png',
+    isDead: true,
+    bio: 'Lord Quellon Greyjoy was the Lord of the Iron Islands and father of Balon and Euron. A progressive lord by Ironborn standards, he sought to bring the Iron Islands closer to the customs of the mainland.',
+    spoilerBio: 'Quellon died during Robert\'s Rebellion when he led the Ironborn fleet into battle. His death allowed his eldest son Balon to take power and later launch his own failed rebellion against the Iron Throne.',
+    tags: ['greyjoy', 'lord', 'iron islands', 'deceased'],
+  },
   'balon-greyjoy': {
     id: 'balon-greyjoy',
     name: 'Balon Greyjoy',
@@ -508,6 +530,16 @@ export const characters: Record<string, Character> = {
   },
 
   // ── HOUSE MARTELL ────────────────────────────────────────────────────────
+  'princess-of-dorne': {
+    id: 'princess-of-dorne',
+    name: 'The Ruling Princess',
+    title: 'Princess of Dorne',
+    house: 'martell',
+    image: '/images/princess-of-dorne.png',
+    isDead: true,
+    bio: 'The unnamed ruling Princess of Dorne was the head of House Martell and mother of Doran and Oberyn. Under Dornish law of equal inheritance, she ruled in her own right as Princess of Dorne.',
+    tags: ['martell', 'princess', 'dorne', 'deceased'],
+  },
   'doran-martell': {
     id: 'doran-martell',
     name: 'Doran Martell',
@@ -654,7 +686,12 @@ export const houses: House[] = [
       characterId: 'aerys-targaryen',
       spouse: 'rhaella-targaryen',
       children: [
-        { characterId: 'rhaegar-targaryen' },
+        {
+          characterId: 'rhaegar-targaryen',
+          children: [
+            { characterId: 'jon-snow' },
+          ],
+        },
         { characterId: 'viserys-targaryen' },
         { characterId: 'daenerys-targaryen' },
       ],
@@ -700,12 +737,19 @@ export const houses: House[] = [
     icon: 'bolt',
     description: 'Founded by Orys Baratheon, rumored bastard brother of Aegon the Conqueror, the stag lords ruled the Stormlands for centuries before seizing the Iron Throne through rebellion.',
     tree: {
-      characterId: 'robert-baratheon',
+      characterId: 'steffon-baratheon',
       children: [
-        { characterId: 'gendry-baratheon' },
+        {
+          characterId: 'robert-baratheon',
+          children: [
+            { characterId: 'gendry-baratheon' },
+          ],
+        },
+        { characterId: 'stannis-baratheon' },
+        { characterId: 'renly-baratheon' },
       ],
     },
-    memberIds: ['robert-baratheon', 'stannis-baratheon', 'renly-baratheon', 'gendry-baratheon'],
+    memberIds: ['steffon-baratheon', 'robert-baratheon', 'stannis-baratheon', 'renly-baratheon', 'gendry-baratheon'],
   },
   {
     id: 'greyjoy',
@@ -718,13 +762,19 @@ export const houses: House[] = [
     icon: 'anchor',
     description: 'The ironborn lords of the sea, ruling from the harsh rocks of Pyke. They live by the Old Way — taking what they want through strength and paying the iron price.',
     tree: {
-      characterId: 'balon-greyjoy',
+      characterId: 'quellon-greyjoy',
       children: [
-        { characterId: 'theon-greyjoy' },
-        { characterId: 'yara-greyjoy' },
+        {
+          characterId: 'balon-greyjoy',
+          children: [
+            { characterId: 'theon-greyjoy' },
+            { characterId: 'yara-greyjoy' },
+          ],
+        },
+        { characterId: 'euron-greyjoy' },
       ],
     },
-    memberIds: ['balon-greyjoy', 'theon-greyjoy', 'yara-greyjoy', 'euron-greyjoy'],
+    memberIds: ['quellon-greyjoy', 'balon-greyjoy', 'theon-greyjoy', 'yara-greyjoy', 'euron-greyjoy'],
   },
   {
     id: 'tyrell',
@@ -737,10 +787,15 @@ export const houses: House[] = [
     icon: 'local_florist',
     description: 'The roses of Highgarden, stewards who rose to lords. The wealthiest and most fertile region of Westeros made the Tyrells powerful through food, gold, and strategic marriages.',
     tree: {
-      characterId: 'mace-tyrell',
+      characterId: 'olenna-tyrell',
       children: [
-        { characterId: 'margaery-tyrell' },
-        { characterId: 'loras-tyrell' },
+        {
+          characterId: 'mace-tyrell',
+          children: [
+            { characterId: 'margaery-tyrell' },
+            { characterId: 'loras-tyrell' },
+          ],
+        },
       ],
     },
     memberIds: ['mace-tyrell', 'olenna-tyrell', 'margaery-tyrell', 'loras-tyrell'],
@@ -756,12 +811,18 @@ export const houses: House[] = [
     icon: 'wb_sunny',
     description: 'The only kingdom to resist Aegon\'s Conquest, Dorne joined through marriage, not war. The Martells are proud, passionate, and follow their own customs of equal inheritance.',
     tree: {
-      characterId: 'doran-martell',
+      characterId: 'princess-of-dorne',
       children: [
-        { characterId: 'trystane-martell' },
+        {
+          characterId: 'doran-martell',
+          children: [
+            { characterId: 'trystane-martell' },
+          ],
+        },
+        { characterId: 'oberyn-martell' },
       ],
     },
-    memberIds: ['doran-martell', 'oberyn-martell', 'trystane-martell'],
+    memberIds: ['princess-of-dorne', 'doran-martell', 'oberyn-martell', 'trystane-martell'],
   },
   {
     id: 'arryn',

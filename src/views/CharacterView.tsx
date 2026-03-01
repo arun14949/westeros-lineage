@@ -64,7 +64,7 @@ export default function CharacterView({ characterId, onNavigate, onNavigateTo, g
           <span className="material-symbols-outlined text-[24px]">arrow_back</span>
         </button>
         <span className="text-xs uppercase tracking-[0.2em] text-ink-light font-bold font-display">Chronicle</span>
-        <label className="flex items-center cursor-pointer">
+        <label className="flex items-center cursor-pointer lg:hidden">
           <div className="relative">
             <input type="checkbox" className="sr-only" checked={spoilerMode} onChange={(e) => setSpoilerMode(e.target.checked)} />
             <div className={`block w-12 h-6 rounded-full transition-colors ${spoilerMode ? 'bg-gold' : 'bg-ink/20'}`}></div>
@@ -74,6 +74,7 @@ export default function CharacterView({ characterId, onNavigate, onNavigateTo, g
             </div>
           </div>
         </label>
+        <div className="w-10 hidden lg:block"></div>
       </header>
 
       <main className="flex-1 flex flex-col relative px-4 md:px-6 lg:px-10 xl:px-12 2xl:px-16 py-4">

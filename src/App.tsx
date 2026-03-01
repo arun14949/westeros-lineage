@@ -81,7 +81,7 @@ export default function App() {
         )}
       </div>
 
-      <SideNav currentView={nav.view} onNavigate={navigateToView} />
+      <SideNav currentView={nav.view} onNavigate={navigateToView} spoilerMode={spoilerMode} setSpoilerMode={setSpoilerMode} />
       <BottomNav currentView={nav.view} onNavigate={navigateToView} />
     </div>
   );

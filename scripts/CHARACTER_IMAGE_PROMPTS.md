@@ -52,7 +52,8 @@
 
 | # | Character | Actor | Prompt (append to style prefix) | Filename |
 |---|-----------|-------|--------------------------------|----------|
-| 26 | Robert Baratheon | Mark Addy | Large barrel-chested man gone heavy with fat, round ruddy face, dark hair with a thick greying black beard, small blue eyes, wearing a golden crown and black and gold royal doublet straining at the belly, boisterous warrior king past his prime | `robert-baratheon.png` |
+| 26 | Steffon Baratheon | Not shown (described) | Strong handsome nobleman in his 40s with dark hair and a neatly trimmed beard, strong jaw, piercing blue eyes, wearing black and gold Baratheon armor with a crowned stag on the breastplate, noble commanding lord expression, stormy sea in background | `steffon-baratheon.png` |
+| 27 | Robert Baratheon | Mark Addy | Large barrel-chested man gone heavy with fat, round ruddy face, dark hair with a thick greying black beard, small blue eyes, wearing a golden crown and black and gold royal doublet straining at the belly, boisterous warrior king past his prime | `robert-baratheon.png` |
 | 27 | Stannis Baratheon | Stephen Dillane | Stern gaunt man in his 40s with receding short dark hair, prominent ears, clean-shaven with thin lips pressed tight, intense blue eyes, wearing dark grey-blue armor with a flaming red heart sigil, rigid unyielding iron expression | `stannis-baratheon.png` |
 | 28 | Renly Baratheon | Gethin Anthony | Handsome young man with dark curly hair, bright blue eyes, charming dimpled smile, clean-shaven youthful face, wearing ornate green and gold plate armor with crowned stag antler helm, charismatic kingly expression | `renly-baratheon.png` |
 | 29 | Gendry | Joe Dempsie | Muscular young man with short black hair, strong jaw, deep blue eyes, broad shoulders, wearing a rough blacksmith's leather apron over simple brown tunic, soot-stained hands, strong determined working-class expression, warhammer nearby | `gendry-baratheon.png` |
@@ -61,7 +62,8 @@
 
 | # | Character | Actor | Prompt (append to style prefix) | Filename |
 |---|-----------|-------|--------------------------------|----------|
-| 30 | Balon Greyjoy | Patrick Malahide | Weathered lean elderly man with thin grey hair and gaunt hard face, deep lines, cold dark eyes, wearing a crude iron crown shaped like driftwood, dark salt-stained leather and chainmail armor with kraken sigil, bitter proud ironborn king expression | `balon-greyjoy.png` |
+| 30 | Quellon Greyjoy | Not shown (described) | Weathered older nobleman in his 50s with salt-and-pepper hair and a stern lined face, dark eyes with hints of progressive thought, wearing dark grey-green Ironborn leather and chainmail with kraken motifs, pragmatic lord of the sea expression | `quellon-greyjoy.png` |
+| 31 | Balon Greyjoy | Patrick Malahide | Weathered lean elderly man with thin grey hair and gaunt hard face, deep lines, cold dark eyes, wearing a crude iron crown shaped like driftwood, dark salt-stained leather and chainmail armor with kraken sigil, bitter proud ironborn king expression | `balon-greyjoy.png` |
 | 31 | Theon Greyjoy | Alfie Allen | Young man with dark hair looking gaunt and haunted, hollow eyes, thin face with visible trauma, wearing tattered dark grey clothing, conflicted broken expression torn between identities, shadow of his former self | `theon-greyjoy.png` |
 | 32 | Yara Greyjoy | Gemma Whelan | Strong-featured woman in her late 20s with dark brown hair pulled back, weathered face, sharp eyes, wearing dark ironborn leather armor with axes at her belt, fierce commanding captain expression, sea warrior | `yara-greyjoy.png` |
 | 33 | Euron Greyjoy | Pilou Asbaek | Wild-looking muscular man with short dark hair and a blue eye, rugged square jaw, manic grin, wearing dark leather pirate captain coat with kraken leather armor, mad cunning expression, eyepatch over one eye | `euron-greyjoy.png` |
@@ -79,7 +81,8 @@
 
 | # | Character | Actor | Prompt (append to style prefix) | Filename |
 |---|-----------|-------|--------------------------------|----------|
-| 38 | Doran Martell | Alexander Siddig | Dignified older man with warm olive-brown skin, greying dark hair, kind but calculating dark eyes, beard, sitting in an ornate wheeled chair, wearing rich orange and red Dornish robes with sun motifs, patient wise prince expression | `doran-martell.png` |
+| 38 | The Ruling Princess | Not shown (described) | Regal older woman with warm olive-brown skin, silver-streaked dark hair in an elegant updo, sharp dark eyes, aquiline nose, wearing flowing orange and red Dornish silk gown with sun-and-spear motifs and gold jewelry, commanding wise matriarch expression | `princess-of-dorne.png` |
+| 39 | Doran Martell | Alexander Siddig | Dignified older man with warm olive-brown skin, greying dark hair, kind but calculating dark eyes, beard, sitting in an ornate wheeled chair, wearing rich orange and red Dornish robes with sun motifs, patient wise prince expression | `doran-martell.png` |
 | 39 | Oberyn Martell | Pedro Pascal | Handsome charismatic man with olive skin, short dark hair, dark brown eyes, thin mustache and goatee, athletic build, wearing light tan leather Dornish armor with sun motifs and orange sash, passionate dangerous confident smile, spear | `oberyn-martell.png` |
 | 40 | Trystane Martell | Toby Sebastian | Young handsome teenage boy with olive skin, dark wavy hair, warm brown eyes, gentle features, wearing Dornish orange and red silk tunic with sun embroidery, gentle romantic youthful prince expression | `trystane-martell.png` |
 
@@ -128,10 +131,12 @@ tyrion-lannister.png
 joffrey-baratheon.png
 myrcella-baratheon.png
 tommen-baratheon.png
+steffon-baratheon.png
 robert-baratheon.png
 stannis-baratheon.png
 renly-baratheon.png
 gendry-baratheon.png
+quellon-greyjoy.png
 balon-greyjoy.png
 theon-greyjoy.png
 yara-greyjoy.png
@@ -140,6 +145,7 @@ mace-tyrell.png
 olenna-tyrell.png
 margaery-tyrell.png
 loras-tyrell.png
+princess-of-dorne.png
 doran-martell.png
 oberyn-martell.png
 trystane-martell.png
