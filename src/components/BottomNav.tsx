@@ -1,23 +1,23 @@
-import { ViewState } from '../App';
+import { TabId } from '../App';
 
 interface BottomNavProps {
-  currentView: ViewState;
-  onNavigate: (view: ViewState) => void;
+  activeTab: TabId;
+  onNavigate: (tab: TabId) => void;
 }
 
-const navItems: { view: ViewState; icon: string; label: string }[] = [
+const navItems: { view: TabId; icon: string; label: string }[] = [
   { view: 'landing', icon: 'home', label: 'Home' },
   { view: 'houses', icon: 'shield', label: 'Houses' },
   { view: 'tree', icon: 'account_tree', label: 'Tree' },
-  { view: 'character', icon: 'menu_book', label: 'Tales' },
+  { view: 'tales', icon: 'menu_book', label: 'Tales' },
 ];
 
-export default function BottomNav({ currentView, onNavigate }: BottomNavProps) {
+export default function BottomNav({ activeTab, onNavigate }: BottomNavProps) {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-30 bg-parchment/95 backdrop-blur-md pb-5 pt-1 shadow-[0_-1px_12px_-2px_rgba(0,0,0,0.08)] lg:hidden">
       <div className="flex items-center justify-around max-w-md mx-auto">
         {navItems.map(({ view, icon, label }) => {
-          const active = currentView === view;
+          const active = activeTab === view;
           return (
             <button
               key={view}

@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-import { ViewState, NavigationState } from '../App';
+import { TabId, NavigationState } from '../App';
 import { houses, searchAll, characters, type Character, type House } from '../data';
 import CharacterAvatar from '../components/CharacterAvatar';
 
 interface LandingViewProps {
-  onNavigate: (view: ViewState) => void;
+  onNavigate: (tab: TabId) => void;
   onNavigateTo: (nav: NavigationState) => void;
 }
 
@@ -56,15 +56,6 @@ export default function LandingView({ onNavigate, onNavigateTo }: LandingViewPro
 
   return (
     <div className="flex-1 flex flex-col pb-20 lg:pb-6 xl:pb-4">
-      <header className="sticky top-0 z-20 bg-background-light/95 backdrop-blur-sm border-b border-primary/20 px-4 py-4">
-        <div className="flex items-center justify-center">
-          <div className="flex flex-col items-center">
-            <span className="font-header text-xs font-bold text-ink tracking-wide leading-tight">House of</span>
-            <span className="text-sm font-header font-bold text-primary tracking-wide">Westeros</span>
-          </div>
-        </div>
-      </header>
-
       <main className="flex-1 flex flex-col p-4 md:p-6 lg:p-10 xl:p-12 2xl:p-16 relative">
         <div className="relative z-10 flex flex-col items-center w-full h-full justify-center mt-4 mb-12">
           <div className="text-center mb-8 w-full">

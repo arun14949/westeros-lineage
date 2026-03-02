@@ -1,12 +1,13 @@
-import { ViewState, NavigationState } from '../App';
+import { TabId, NavigationState } from '../App';
 import { characters, houses, getCharacter } from '../data';
 import CharacterAvatar from '../components/CharacterAvatar';
 
 interface CharacterViewProps {
   characterId?: string;
-  onNavigate: (view: ViewState) => void;
+  onNavigate: (tab: TabId) => void;
   onNavigateTo: (nav: NavigationState) => void;
   goBack: () => void;
+  canGoBack: boolean;
   spoilerMode: boolean;
   setSpoilerMode: (mode: boolean) => void;
 }
@@ -29,7 +30,7 @@ const houseBorderColor: Record<string, string> = {
   martell: 'border-martell', arryn: 'border-arryn', tully: 'border-tully',
 };
 
-export default function CharacterView({ characterId, onNavigate, onNavigateTo, goBack, spoilerMode, setSpoilerMode }: CharacterViewProps) {
+export default function CharacterView({ characterId, onNavigate, onNavigateTo, goBack, canGoBack, spoilerMode, setSpoilerMode }: CharacterViewProps) {
   const char = characterId ? getCharacter(characterId) : undefined;
 
   if (!char) {
@@ -59,26 +60,15 @@ export default function CharacterView({ characterId, onNavigate, onNavigateTo, g
 
   return (
     <div className="flex-1 flex flex-col pb-20 lg:pb-6 xl:pb-4">
-      <header className="sticky top-0 z-20 bg-background-light/90 backdrop-blur-sm px-4 py-3 flex items-center justify-between border-b border-ink/5">
-        <button onClick={goBack} className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-ink/5 transition-colors text-ink">
-          <span className="material-symbols-outlined text-[24px]">arrow_back</span>
-        </button>
-        <span className="text-xs uppercase tracking-[0.2em] text-ink-light font-bold font-display">Chronicle</span>
-        <label className="flex items-center cursor-pointer lg:hidden">
-          <div className="relative">
-            <input type="checkbox" className="sr-only" checked={spoilerMode} onChange={(e) => setSpoilerMode(e.target.checked)} />
-            <div className={`block w-12 h-6 rounded-full transition-colors ${spoilerMode ? 'bg-gold' : 'bg-ink/20'}`}></div>
-            <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform flex items-center justify-center ${spoilerMode ? 'transform translate-x-6' : ''}`}>
-              {spoilerMode && <span className="material-symbols-outlined text-[10px] text-gold">visibility</span>}
-              {!spoilerMode && <span className="material-symbols-outlined text-[10px] text-ink/40">visibility_off</span>}
-            </div>
-          </div>
-        </label>
-        <div className="w-10 hidden lg:block"></div>
-      </header>
-
       <main className="flex-1 flex flex-col relative px-4 md:px-6 lg:px-10 xl:px-12 2xl:px-16 py-4">
         <div className="relative z-10 flex flex-col items-center max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl mx-auto w-full">
+          {/* Back button */}
+          {canGoBack && (
+            <button onClick={goBack} className="self-start flex items-center justify-center w-10 h-10 rounded-full hover:bg-ink/5 transition-colors text-ink mb-2">
+              <span className="material-symbols-outlined text-[24px]">arrow_back</span>
+            </button>
+          )}
+
           {/* Portrait */}
           <div className="relative mt-2 mb-6">
             <CharacterAvatar character={char} size="xl" className={`hand-drawn-circle border-[3px] ${borderColor}/80 relative z-10`} />

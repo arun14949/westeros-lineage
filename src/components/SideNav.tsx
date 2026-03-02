@@ -1,20 +1,20 @@
-import { ViewState } from '../App';
+import { TabId } from '../App';
 
 interface SideNavProps {
-  currentView: ViewState;
-  onNavigate: (view: ViewState) => void;
+  activeTab: TabId;
+  onNavigate: (tab: TabId) => void;
   spoilerMode: boolean;
   setSpoilerMode: (mode: boolean) => void;
 }
 
-const navItems: { view: ViewState; icon: string; label: string }[] = [
+const navItems: { view: TabId; icon: string; label: string }[] = [
   { view: 'landing', icon: 'home', label: 'Home' },
   { view: 'houses', icon: 'shield', label: 'Houses' },
   { view: 'tree', icon: 'account_tree', label: 'Lineage' },
-  { view: 'character', icon: 'menu_book', label: 'Chronicles' },
+  { view: 'tales', icon: 'menu_book', label: 'Tales' },
 ];
 
-export default function SideNav({ currentView, onNavigate, spoilerMode, setSpoilerMode }: SideNavProps) {
+export default function SideNav({ activeTab, onNavigate, spoilerMode, setSpoilerMode }: SideNavProps) {
   return (
     <nav className="hidden lg:flex fixed left-0 top-0 h-full w-64 xl:w-72 bg-parchment/95 backdrop-blur-sm border-r-2 border-primary/20 flex-col z-30 shadow-scroll">
       {/* Logo Section */}
@@ -32,7 +32,7 @@ export default function SideNav({ currentView, onNavigate, spoilerMode, setSpoil
             key={view}
             onClick={() => onNavigate(view)}
             className={`w-full flex items-center gap-4 px-6 py-3 transition-all cursor-pointer ${
-              currentView === view
+              activeTab === view
                 ? 'bg-primary/10 text-primary font-semibold border-l-4 border-primary'
                 : 'text-ink-light hover:bg-primary/5 hover:text-primary hover:translate-x-1'
             }`}

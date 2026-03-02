@@ -3,10 +3,12 @@ import LandingView from './views/LandingView';
 import HousesView from './views/HousesView';
 import CharacterView from './views/CharacterView';
 import TreeView from './views/TreeView';
+import TalesView from './views/TalesView';
 import BottomNav from './components/BottomNav';
 import SideNav from './components/SideNav';
 
-export type ViewState = 'landing' | 'houses' | 'character' | 'tree';
+export type ViewState = 'landing' | 'houses' | 'character' | 'tree' | 'tales';
+export type TabId = 'landing' | 'houses' | 'tree' | 'tales';
 
 export interface NavigationState {
   view: ViewState;
@@ -18,7 +20,9 @@ export default function App() {
   const [nav, setNav] = useState<NavigationState>({ view: 'landing' });
   const [spoilerMode, setSpoilerMode] = useState(false);
   const [history, setHistory] = useState<NavigationState[]>([]);
+  const [activeTab, setActiveTab] = useState<TabId>('landing');
 
+  // In-app navigation (character cards, house cards, etc.) — preserves activeTab
   const navigate = useCallback((next: NavigationState) => {
     setHistory(prev => [...prev, nav]);
     setNav(next);
@@ -33,9 +37,14 @@ export default function App() {
     });
   }, []);
 
-  const navigateToView = useCallback((view: ViewState) => {
-    navigate({ view });
-  }, [navigate]);
+  // Top-level tab navigation (bottom nav / side nav) — clears history, updates activeTab
+  const navigateToTab = useCallback((tab: TabId) => {
+    setHistory([]);
+    setActiveTab(tab);
+    setNav({ view: tab });
+  }, []);
+
+  const canGoBack = history.length > 0;
 
   // Scroll to top on every navigation change
   useEffect(() => {
@@ -49,23 +58,25 @@ export default function App() {
       <div className="relative z-10 flex-1 flex flex-col">
         {nav.view === 'landing' && (
           <LandingView
-            onNavigate={navigateToView}
+            onNavigate={navigateToTab}
             onNavigateTo={navigate}
           />
         )}
         {nav.view === 'houses' && (
           <HousesView
-            onNavigate={navigateToView}
+            onNavigate={navigateToTab}
             onNavigateTo={navigate}
             goBack={goBack}
+            canGoBack={canGoBack}
           />
         )}
         {nav.view === 'character' && (
           <CharacterView
             characterId={nav.characterId || 'jon-snow'}
-            onNavigate={navigateToView}
+            onNavigate={navigateToTab}
             onNavigateTo={navigate}
             goBack={goBack}
+            canGoBack={canGoBack}
             spoilerMode={spoilerMode}
             setSpoilerMode={setSpoilerMode}
           />
@@ -75,14 +86,20 @@ export default function App() {
             houseId={nav.houseId || 'stark'}
             onNavigateTo={navigate}
             goBack={goBack}
+            canGoBack={canGoBack}
             spoilerMode={spoilerMode}
-            setSpoilerMode={setSpoilerMode}
+          />
+        )}
+        {nav.view === 'tales' && (
+          <TalesView
+            onNavigateTo={navigate}
+            spoilerMode={spoilerMode}
           />
         )}
       </div>
 
-      <SideNav currentView={nav.view} onNavigate={navigateToView} spoilerMode={spoilerMode} setSpoilerMode={setSpoilerMode} />
-      <BottomNav currentView={nav.view} onNavigate={navigateToView} />
+      <SideNav activeTab={activeTab} onNavigate={navigateToTab} spoilerMode={spoilerMode} setSpoilerMode={setSpoilerMode} />
+      <BottomNav activeTab={activeTab} onNavigate={navigateToTab} />
     </div>
   );
 }

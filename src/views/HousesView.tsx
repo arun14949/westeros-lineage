@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { ViewState, NavigationState } from '../App';
+import { TabId, NavigationState } from '../App';
 import { houses, characters, type House } from '../data';
 import CharacterAvatar from '../components/CharacterAvatar';
 
 interface HousesViewProps {
-  onNavigate: (view: ViewState) => void;
+  onNavigate: (tab: TabId) => void;
   onNavigateTo: (nav: NavigationState) => void;
   goBack: () => void;
+  canGoBack: boolean;
 }
 
 const colorMap: Record<string, { text: string; bg: string; bgBlur: string; border: string; borderHover: string; gradient: string; bgPill: string; groupHoverText: string }> = {
@@ -27,7 +28,7 @@ const defaultColors = colorMap.stark;
 
 type FilterType = 'all' | 'westeros' | 'royal' | 'alive';
 
-export default function HousesView({ onNavigate, onNavigateTo, goBack }: HousesViewProps) {
+export default function HousesView({ onNavigate, onNavigateTo, goBack, canGoBack }: HousesViewProps) {
   const [filter, setFilter] = useState<FilterType>('all');
 
   const filteredHouses = houses.filter(house => {
@@ -42,20 +43,18 @@ export default function HousesView({ onNavigate, onNavigateTo, goBack }: HousesV
 
   return (
     <div className="flex-1 flex flex-col pb-20 lg:pb-6 xl:pb-4">
-      <header className="sticky top-0 z-20 bg-background-light/95 backdrop-blur-sm border-b border-primary/20 px-4 py-3 shadow-sm">
-        <div className="flex items-center justify-between">
-          <button onClick={goBack} className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-colors text-ink-light">
-            <span className="material-symbols-outlined text-[24px]">arrow_back</span>
-          </button>
-          <div className="flex flex-col items-center">
+      <main className="flex-1 flex flex-col p-4 md:p-6 lg:p-10 xl:p-12 2xl:p-16 relative gap-6">
+        <div className="flex items-center gap-3">
+          {canGoBack && (
+            <button onClick={goBack} className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-colors text-ink-light shrink-0">
+              <span className="material-symbols-outlined text-[24px]">arrow_back</span>
+            </button>
+          )}
+          <div className="flex flex-col">
             <h1 className="text-lg lg:text-xl xl:text-2xl font-header font-bold text-ink tracking-wide">The Great Houses</h1>
             <span className="text-[10px] uppercase tracking-[0.2em] text-primary">Registry</span>
           </div>
-          <div className="w-10"></div>
         </div>
-      </header>
-
-      <main className="flex-1 flex flex-col p-4 md:p-6 lg:p-10 xl:p-12 2xl:p-16 relative gap-6">
         <div className="relative z-10 flex gap-2 overflow-x-auto pb-2 no-scrollbar">
           {([['all', 'All Houses'], ['royal', 'Royal'], ['alive', 'With Survivors']] as [FilterType, string][]).map(([key, label]) => (
             <button
