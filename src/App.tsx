@@ -60,6 +60,8 @@ export default function App() {
           <LandingView
             onNavigate={navigateToTab}
             onNavigateTo={navigate}
+            spoilerMode={spoilerMode}
+            setSpoilerMode={setSpoilerMode}
           />
         )}
         {nav.view === 'houses' && (
@@ -68,6 +70,8 @@ export default function App() {
             onNavigateTo={navigate}
             goBack={goBack}
             canGoBack={canGoBack}
+            spoilerMode={spoilerMode}
+            setSpoilerMode={setSpoilerMode}
           />
         )}
         {nav.view === 'character' && (
@@ -88,12 +92,14 @@ export default function App() {
             goBack={goBack}
             canGoBack={canGoBack}
             spoilerMode={spoilerMode}
+            setSpoilerMode={setSpoilerMode}
           />
         )}
         {nav.view === 'tales' && (
           <TalesView
             onNavigateTo={navigate}
             spoilerMode={spoilerMode}
+            setSpoilerMode={setSpoilerMode}
           />
         )}
       </div>

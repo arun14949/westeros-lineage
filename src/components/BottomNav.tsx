@@ -1,4 +1,5 @@
 import { TabId } from '../App';
+import { playSound } from '../sounds';
 
 interface BottomNavProps {
   activeTab: TabId;
@@ -8,7 +9,7 @@ interface BottomNavProps {
 const navItems: { view: TabId; icon: string; label: string }[] = [
   { view: 'landing', icon: 'home', label: 'Home' },
   { view: 'houses', icon: 'shield', label: 'Houses' },
-  { view: 'tree', icon: 'account_tree', label: 'Tree' },
+  { view: 'tree', icon: 'account_tree', label: 'Lineage' },
   { view: 'tales', icon: 'menu_book', label: 'Tales' },
 ];
 
@@ -21,7 +22,7 @@ export default function BottomNav({ activeTab, onNavigate }: BottomNavProps) {
           return (
             <button
               key={view}
-              onClick={() => onNavigate(view)}
+              onClick={() => { playSound('tap'); onNavigate(view); }}
               className="flex flex-col items-center justify-center gap-0.5 py-1 min-w-[4rem] group"
             >
               <div className={`flex items-center justify-center w-16 h-8 rounded-2xl transition-all duration-200 ${active ? 'bg-primary/12' : 'group-hover:bg-primary/5'}`}>

@@ -2,12 +2,16 @@ import { useState } from 'react';
 import { TabId, NavigationState } from '../App';
 import { houses, characters, type House } from '../data';
 import CharacterAvatar from '../components/CharacterAvatar';
+import MobileHeader from '../components/MobileHeader';
+import { playSound } from '../sounds';
 
 interface HousesViewProps {
   onNavigate: (tab: TabId) => void;
   onNavigateTo: (nav: NavigationState) => void;
   goBack: () => void;
   canGoBack: boolean;
+  spoilerMode: boolean;
+  setSpoilerMode: (mode: boolean) => void;
 }
 
 const colorMap: Record<string, { text: string; bg: string; bgBlur: string; border: string; borderHover: string; gradient: string; bgPill: string; groupHoverText: string }> = {
@@ -28,7 +32,7 @@ const defaultColors = colorMap.stark;
 
 type FilterType = 'all' | 'westeros' | 'royal' | 'alive';
 
-export default function HousesView({ onNavigate, onNavigateTo, goBack, canGoBack }: HousesViewProps) {
+export default function HousesView({ onNavigate, onNavigateTo, goBack, canGoBack, spoilerMode, setSpoilerMode }: HousesViewProps) {
   const [filter, setFilter] = useState<FilterType>('all');
 
   const filteredHouses = houses.filter(house => {
@@ -43,8 +47,9 @@ export default function HousesView({ onNavigate, onNavigateTo, goBack, canGoBack
 
   return (
     <div className="flex-1 flex flex-col pb-20 lg:pb-6 xl:pb-4">
+      <MobileHeader title="The Great Houses" canGoBack={canGoBack} goBack={goBack} spoilerMode={spoilerMode} setSpoilerMode={setSpoilerMode} />
       <main className="flex-1 flex flex-col p-4 md:p-6 lg:p-10 xl:p-12 2xl:p-16 relative gap-6">
-        <div className="flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-3">
           {canGoBack && (
             <button onClick={goBack} className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-primary/10 transition-colors text-ink-light shrink-0">
               <span className="material-symbols-outlined text-[24px]">arrow_back</span>
@@ -59,7 +64,7 @@ export default function HousesView({ onNavigate, onNavigateTo, goBack, canGoBack
           {([['all', 'All Houses'], ['royal', 'Royal'], ['alive', 'With Survivors']] as [FilterType, string][]).map(([key, label]) => (
             <button
               key={key}
-              onClick={() => setFilter(key)}
+              onClick={() => { playSound('tap'); setFilter(key); }}
               className={`px-4 py-1.5 text-xs font-semibold rounded-full border whitespace-nowrap transition-colors ${filter === key ? 'bg-primary text-white border-primary shadow-sm' : 'bg-transparent text-ink-light hover:bg-primary/5 border-ink-light/20'}`}
             >
               {label}
@@ -76,7 +81,7 @@ export default function HousesView({ onNavigate, onNavigateTo, goBack, canGoBack
             return (
               <article
                 key={house.id}
-                onClick={() => onNavigateTo({ view: 'tree', houseId: house.id })}
+                onClick={() => { playSound('tap'); onNavigateTo({ view: 'tree', houseId: house.id }); }}
                 className={`scroll-card bg-[#fffcf5] p-6 border border-parchment-dark ${colors.borderHover} transition-all cursor-pointer group`}
               >
                 <div className="flex justify-between items-start mb-4">

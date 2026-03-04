@@ -1,4 +1,5 @@
 import { TabId } from '../App';
+import SpoilerToggle from './SpoilerToggle';
 
 interface SideNavProps {
   activeTab: TabId;
@@ -45,20 +46,7 @@ export default function SideNav({ activeTab, onNavigate, spoilerMode, setSpoiler
 
       {/* Spoiler Toggle */}
       <div className="px-6 py-4 border-t border-primary/10">
-        <label className="flex items-center justify-between cursor-pointer group">
-          <div>
-            <span className="font-display text-sm font-semibold text-ink">Spoilers</span>
-            <p className="text-[10px] text-ink-light/60 mt-0.5">Show deaths &amp; secrets</p>
-          </div>
-          <div className="relative">
-            <input type="checkbox" className="sr-only" checked={spoilerMode} onChange={(e) => setSpoilerMode(e.target.checked)} />
-            <div className={`block w-11 h-6 rounded-full transition-colors ${spoilerMode ? 'bg-gold' : 'bg-ink/20'}`}></div>
-            <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform flex items-center justify-center ${spoilerMode ? 'transform translate-x-5' : ''}`}>
-              {spoilerMode && <span className="material-symbols-outlined text-[10px] text-gold">visibility</span>}
-              {!spoilerMode && <span className="material-symbols-outlined text-[10px] text-ink/40">visibility_off</span>}
-            </div>
-          </div>
-        </label>
+        <SpoilerToggle spoilerMode={spoilerMode} setSpoilerMode={setSpoilerMode} variant="full" />
       </div>
 
       {/* Version Footer */}

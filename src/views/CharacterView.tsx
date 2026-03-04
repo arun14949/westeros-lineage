@@ -1,6 +1,7 @@
 import { TabId, NavigationState } from '../App';
 import { characters, houses, getCharacter } from '../data';
 import CharacterAvatar from '../components/CharacterAvatar';
+import MobileHeader from '../components/MobileHeader';
 
 interface CharacterViewProps {
   characterId?: string;
@@ -60,11 +61,12 @@ export default function CharacterView({ characterId, onNavigate, onNavigateTo, g
 
   return (
     <div className="flex-1 flex flex-col pb-20 lg:pb-6 xl:pb-4">
+      <MobileHeader title={char.name} canGoBack={canGoBack} goBack={goBack} spoilerMode={spoilerMode} setSpoilerMode={setSpoilerMode} />
       <main className="flex-1 flex flex-col relative px-4 md:px-6 lg:px-10 xl:px-12 2xl:px-16 py-4">
         <div className="relative z-10 flex flex-col items-center max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-6xl 2xl:max-w-7xl mx-auto w-full">
-          {/* Back button */}
+          {/* Back button (desktop only) */}
           {canGoBack && (
-            <button onClick={goBack} className="self-start flex items-center justify-center w-10 h-10 rounded-full hover:bg-ink/5 transition-colors text-ink mb-2">
+            <button onClick={goBack} className="self-start hidden lg:flex items-center justify-center w-10 h-10 rounded-full hover:bg-ink/5 transition-colors text-ink mb-2">
               <span className="material-symbols-outlined text-[24px]">arrow_back</span>
             </button>
           )}

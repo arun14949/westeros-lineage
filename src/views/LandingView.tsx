@@ -2,10 +2,13 @@ import { useState, useRef, useEffect } from 'react';
 import { TabId, NavigationState } from '../App';
 import { houses, searchAll, characters, type Character, type House } from '../data';
 import CharacterAvatar from '../components/CharacterAvatar';
+import { playSound } from '../sounds';
 
 interface LandingViewProps {
   onNavigate: (tab: TabId) => void;
   onNavigateTo: (nav: NavigationState) => void;
+  spoilerMode: boolean;
+  setSpoilerMode: (mode: boolean) => void;
 }
 
 const FEATURED_HOUSES = ['stark', 'targaryen', 'lannister', 'baratheon'];
@@ -34,7 +37,7 @@ const houseBorderMap: Record<string, string> = {
   tully: 'border-tully/20 hover:border-tully/50',
 };
 
-export default function LandingView({ onNavigate, onNavigateTo }: LandingViewProps) {
+export default function LandingView({ onNavigate, onNavigateTo, spoilerMode, setSpoilerMode }: LandingViewProps) {
   const [query, setQuery] = useState('');
   const [showResults, setShowResults] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -66,6 +69,22 @@ export default function LandingView({ onNavigate, onNavigateTo }: LandingViewPro
             <p className="font-body italic text-ink-light text-base md:text-lg lg:text-xl xl:text-2xl">
               The Great Houses of the Seven Kingdoms
             </p>
+          </div>
+
+          {/* Spoiler Toggle (mobile) */}
+          <div className="mb-6 lg:hidden">
+            <label className="inline-flex items-center gap-3 px-4 py-2.5 bg-parchment rounded-full border border-parchment-dark/50 shadow-sm cursor-pointer">
+              <span className="material-symbols-outlined text-[18px] text-ink-light/60">{spoilerMode ? 'visibility' : 'visibility_off'}</span>
+              <span className="font-display text-xs font-semibold text-ink">Spoilers</span>
+              <div className="relative">
+                <input type="checkbox" className="sr-only" checked={spoilerMode} onChange={(e) => setSpoilerMode(e.target.checked)} />
+                <div className={`block w-11 h-6 rounded-full transition-colors ${spoilerMode ? 'bg-gold' : 'bg-ink/20'}`}></div>
+                <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform flex items-center justify-center ${spoilerMode ? 'transform translate-x-5' : ''}`}>
+                  {spoilerMode && <span className="material-symbols-outlined text-[10px] text-gold">visibility</span>}
+                  {!spoilerMode && <span className="material-symbols-outlined text-[10px] text-ink/40">visibility_off</span>}
+                </div>
+              </div>
+            </label>
           </div>
 
           {/* Search */}
@@ -162,14 +181,14 @@ export default function LandingView({ onNavigate, onNavigateTo }: LandingViewPro
                   house={house}
                   colorClass={houseColorMap[house.color] || 'text-ink-light'}
                   borderClass={houseBorderMap[house.color] || 'border-ink/20'}
-                  onClick={() => onNavigateTo({ view: 'tree', houseId: house.id })}
+                  onClick={() => { playSound('tap'); onNavigateTo({ view: 'tree', houseId: house.id }); }}
                 />
               ))}
             </div>
 
             <div className="mt-8 text-center">
               <button
-                onClick={() => onNavigate('houses')}
+                onClick={() => { playSound('tap'); onNavigate('houses'); }}
                 className="inline-flex items-center gap-2 font-display text-primary hover:text-primary-dark transition-colors font-semibold text-sm border-b border-primary/30 pb-0.5 hover:border-primary"
               >
                 <span>Explore All {houses.length} Great Houses</span>
@@ -193,7 +212,7 @@ export default function LandingView({ onNavigate, onNavigateTo }: LandingViewPro
                   <button
                     key={id}
                     className="flex flex-col items-center gap-2 group shrink-0 p-1"
-                    onClick={() => onNavigateTo({ view: 'character', characterId: id })}
+                    onClick={() => { playSound('tap'); onNavigateTo({ view: 'character', characterId: id }); }}
                   >
                     <div className="relative">
                       <CharacterAvatar character={char} size="lg" className="group-hover:ring-2 group-hover:ring-primary/50 transition-all group-hover:scale-105" />

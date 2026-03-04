@@ -1,7 +1,9 @@
 import { useRef, useEffect, useState } from 'react';
 import { NavigationState } from '../App';
-import { getHouse, characters, type TreeNode, type House } from '../data';
+import { getHouse, houses, characters, type TreeNode, type House } from '../data';
 import CharacterAvatar from '../components/CharacterAvatar';
+import MobileHeader from '../components/MobileHeader';
+import { playSound } from '../sounds';
 
 interface TreeViewProps {
   houseId: string;
@@ -9,6 +11,7 @@ interface TreeViewProps {
   goBack: () => void;
   canGoBack: boolean;
   spoilerMode: boolean;
+  setSpoilerMode: (mode: boolean) => void;
 }
 
 const houseTextColor: Record<string, string> = {
@@ -87,7 +90,7 @@ interface NodePosition {
   height: number;
 }
 
-export default function TreeView({ houseId, onNavigateTo, goBack, canGoBack, spoilerMode }: TreeViewProps) {
+export default function TreeView({ houseId, onNavigateTo, goBack, canGoBack, spoilerMode, setSpoilerMode }: TreeViewProps) {
   const house = getHouse(houseId);
   const [nodePositions, setNodePositions] = useState<NodePosition[]>([]);
   const treeContainerRef = useRef<HTMLDivElement>(null);
@@ -182,16 +185,62 @@ export default function TreeView({ houseId, onNavigateTo, goBack, canGoBack, spo
     };
 
     traverseTree(displayTree);
+
+    // Spoiler: draw dashed lines from Jaime to Cersei's children (secret father)
+    if (spoilerMode && house.id === 'lannister') {
+      const jaimePos = posMap.get('jaime-lannister');
+      const secretChildren = ['joffrey-baratheon', 'myrcella-baratheon', 'tommen-baratheon'];
+      for (const childId of secretChildren) {
+        const childPos = posMap.get(childId);
+        if (jaimePos && childPos) {
+          const startX = jaimePos.x + jaimePos.width / 2;
+          const startY = jaimePos.y + jaimePos.height;
+          const endX = childPos.x + childPos.width / 2;
+          const endY = childPos.y;
+          const midY = startY + (endY - startY) * 0.5;
+
+          paths.push(
+            <path
+              key={`secret-jaime-${childId}`}
+              d={`M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`}
+              stroke="rgb(28, 25, 23)"
+              strokeWidth="1.5"
+              strokeOpacity="0.3"
+              strokeDasharray="4 3"
+              fill="none"
+              strokeLinecap="round"
+            />
+          );
+        }
+      }
+    }
+
     return paths;
   };
 
   return (
     <div className="flex-1 flex flex-col pb-20 lg:pb-6 xl:pb-4">
+      <MobileHeader title="Lineage" canGoBack={canGoBack} goBack={goBack} spoilerMode={spoilerMode} setSpoilerMode={setSpoilerMode} />
+      {/* House selector (mobile) */}
+      <div className="flex gap-2 overflow-x-auto px-4 py-3 no-scrollbar lg:hidden">
+        {houses.map(h => {
+          const active = h.id === houseId;
+          return (
+            <button
+              key={h.id}
+              onClick={() => onNavigateTo({ view: 'tree', houseId: h.id })}
+              className={`px-3 py-1.5 text-xs font-display font-semibold rounded-full border whitespace-nowrap transition-colors shrink-0 ${active ? 'bg-primary text-white border-primary shadow-sm' : 'bg-transparent text-ink-light hover:bg-primary/5 border-ink-light/20'}`}
+            >
+              {h.name}
+            </button>
+          );
+        })}
+      </div>
       <main className="flex-1 flex flex-col relative py-6">
         {/* Header Section */}
         <div className="flex items-start mb-6 px-4 md:px-6 lg:px-10 xl:px-12 2xl:px-16">
           {canGoBack && (
-            <button onClick={goBack} className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-ink/5 transition-colors text-ink shrink-0 mt-1">
+            <button onClick={goBack} className="hidden lg:flex items-center justify-center w-10 h-10 rounded-full hover:bg-ink/5 transition-colors text-ink shrink-0 mt-1">
               <span className="material-symbols-outlined text-[24px]">arrow_back</span>
             </button>
           )}
@@ -239,7 +288,7 @@ export default function TreeView({ houseId, onNavigateTo, goBack, canGoBack, spo
             textColor={textColor}
             bgColor={bgColor}
             spoilerMode={spoilerMode}
-            onCharacterClick={(id) => onNavigateTo({ view: 'character', characterId: id })}
+            onCharacterClick={(id) => { playSound('tap'); onNavigateTo({ view: 'character', characterId: id }); }}
             onPositionUpdate={handlePositionUpdate}
           />
         </div>
@@ -416,7 +465,7 @@ function TreeNodeComponent(props: TreeNodeProps) {
       {hasChildren && (
         <>
           <div className="h-16"></div>
-          <div className="flex gap-5">
+          <div className="flex gap-3">
             {node.children!.map((child) => (
               <TreeNodeComponent
                 key={child.characterId}

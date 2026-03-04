@@ -2,10 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { NavigationState } from '../App';
 import { characters, houses, type Character } from '../data';
 import CharacterAvatar from '../components/CharacterAvatar';
+import MobileHeader from '../components/MobileHeader';
+import { playSound } from '../sounds';
+import { useWebHaptics } from 'web-haptics/react';
 
 interface TalesViewProps {
   onNavigateTo: (nav: NavigationState) => void;
   spoilerMode: boolean;
+  setSpoilerMode: (mode: boolean) => void;
 }
 
 const houseTextColor: Record<string, string> = {
@@ -35,7 +39,8 @@ function shuffle(arr: Character[]): Character[] {
   return shuffled;
 }
 
-export default function TalesView({ onNavigateTo, spoilerMode }: TalesViewProps) {
+export default function TalesView({ onNavigateTo, spoilerMode, setSpoilerMode }: TalesViewProps) {
+  const { trigger } = useWebHaptics();
   const [deck, setDeck] = useState<Character[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -43,6 +48,8 @@ export default function TalesView({ onNavigateTo, spoilerMode }: TalesViewProps)
   const [touchDelta, setTouchDelta] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
+  const [enterFrom, setEnterFrom] = useState<'left' | 'right' | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   // Shuffle all characters on mount
   useEffect(() => {
@@ -50,26 +57,42 @@ export default function TalesView({ onNavigateTo, spoilerMode }: TalesViewProps)
   }, []);
 
   const goToNext = useCallback(() => {
-    if (currentIndex < deck.length - 1) {
+    if (currentIndex < deck.length - 1 && !isAnimating) {
+      setIsAnimating(true);
       setSlideDirection('left');
       setTimeout(() => {
         setCurrentIndex(prev => prev + 1);
         setIsFlipped(false);
         setSlideDirection(null);
+        setEnterFrom('right');
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setEnterFrom(null);
+            setTimeout(() => setIsAnimating(false), 200);
+          });
+        });
       }, 200);
     }
-  }, [currentIndex, deck.length]);
+  }, [currentIndex, deck.length, isAnimating]);
 
   const goToPrev = useCallback(() => {
-    if (currentIndex > 0) {
+    if (currentIndex > 0 && !isAnimating) {
+      setIsAnimating(true);
       setSlideDirection('right');
       setTimeout(() => {
         setCurrentIndex(prev => prev - 1);
         setIsFlipped(false);
         setSlideDirection(null);
+        setEnterFrom('left');
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setEnterFrom(null);
+            setTimeout(() => setIsAnimating(false), 200);
+          });
+        });
       }, 200);
     }
-  }, [currentIndex]);
+  }, [currentIndex, isAnimating]);
 
   // Touch handlers for swipe
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -83,6 +106,11 @@ export default function TalesView({ onNavigateTo, spoilerMode }: TalesViewProps)
 
   const handleTouchEnd = () => {
     if (Math.abs(touchDelta) > 80) {
+      playSound('swipe');
+      trigger([
+        { duration: 40, intensity: 0.8 },
+        { delay: 100, duration: 40, intensity: 0.6 },
+      ]);
       setIsSwiping(true);
       if (touchDelta < 0) goToNext();
       else goToPrev();
@@ -93,7 +121,8 @@ export default function TalesView({ onNavigateTo, spoilerMode }: TalesViewProps)
   };
 
   const handleCardClick = () => {
-    if (!isSwiping) {
+    if (!isSwiping && !isAnimating) {
+      playSound('flip');
       setIsFlipped(prev => !prev);
     }
   };
@@ -113,6 +142,7 @@ export default function TalesView({ onNavigateTo, spoilerMode }: TalesViewProps)
   }, [goToNext, goToPrev]);
 
   const handleShuffle = () => {
+    playSound('shuffle');
     setDeck(shuffle(Object.values(characters)));
     setCurrentIndex(0);
     setIsFlipped(false);
@@ -131,19 +161,16 @@ export default function TalesView({ onNavigateTo, spoilerMode }: TalesViewProps)
   const dragging = touchStart !== null && Math.abs(touchDelta) > 5;
   const flipTransform = isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)';
   const dragTransform = dragging ? `translateX(${touchDelta}px)` : '';
-  const slideTransform = slideDirection === 'left' ? 'translateX(-120%)' : slideDirection === 'right' ? 'translateX(120%)' : '';
-  const cardTransform = slideTransform || `${flipTransform} ${dragTransform}`;
+  const dragRotation = dragging ? `rotate(${touchDelta * 0.05}deg)` : '';
+  const exitTransform = slideDirection === 'left' ? 'translateX(-120%) rotate(-8deg)' : slideDirection === 'right' ? 'translateX(120%) rotate(8deg)' : '';
+  const enterTransform = enterFrom === 'right' ? 'translateX(80%)' : enterFrom === 'left' ? 'translateX(-80%)' : '';
+  const cardTransform = exitTransform || enterTransform || `${flipTransform} ${dragTransform} ${dragRotation}`;
+  const cardOpacity = slideDirection ? 0 : enterFrom ? 0.5 : 1;
 
   return (
     <div className="flex-1 flex flex-col pb-20 lg:pb-6 xl:pb-4">
+      <MobileHeader title="Tales" spoilerMode={spoilerMode} setSpoilerMode={setSpoilerMode} />
       <main className="flex-1 flex flex-col items-center justify-center p-4 md:p-6 lg:p-10 relative">
-        {/* Card Counter */}
-        <div className="mb-4 text-center">
-          <span className="text-xs font-display text-ink-light tracking-wider">
-            {currentIndex + 1} / {deck.length}
-          </span>
-        </div>
-
         {/* Card + Arrow Buttons */}
         <div className="flex items-center gap-4 w-full justify-center">
           {/* Left Arrow (desktop) */}
@@ -164,33 +191,41 @@ export default function TalesView({ onNavigateTo, spoilerMode }: TalesViewProps)
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
+            {/* Stacked card shadows */}
+            <div className="absolute inset-0 bg-[#fffcf5] rounded-xl border-2 border-parchment-dark/50 rotate-2 scale-[0.97] translate-y-2 -z-10"></div>
+            <div className="absolute inset-0 bg-[#fffcf5] rounded-xl border-2 border-parchment-dark/30 -rotate-1 scale-[0.94] translate-y-4 -z-20"></div>
+
             <div
-              className={`relative w-full h-full ${slideDirection ? '' : 'transition-transform duration-500'}`}
+              className={`relative w-full h-full ${!slideDirection && !enterFrom ? 'transition-transform duration-500' : ''}`}
               style={{
                 transformStyle: 'preserve-3d',
                 transform: cardTransform,
+                opacity: cardOpacity,
+                transition: slideDirection ? 'transform 200ms ease-in, opacity 150ms' : enterFrom ? undefined : 'transform 200ms ease-out, opacity 200ms ease-out',
               }}
             >
               {/* FRONT */}
               <div
-                className="absolute inset-0 backface-hidden bg-[#fffcf5] rounded-xl border-2 border-parchment-dark shadow-scroll flex flex-col items-center justify-center p-6"
+                className="absolute inset-0 backface-hidden bg-[#fffcf5] rounded-xl border-2 border-parchment-dark shadow-scroll flex flex-col items-center justify-between p-6"
               >
-                <div className="w-16 h-3 decoration-flourish mb-4"></div>
+                <div className="w-16 h-3 decoration-flourish"></div>
 
-                <CharacterAvatar character={char} size="xl" className={`mb-4 hand-drawn-circle border-[3px] ${borderColor}/30`} />
+                <div className="flex flex-col items-center">
+                  <CharacterAvatar character={char} size="xl" className={`mb-4 hand-drawn-circle border-[3px] ${borderColor}/30`} />
 
-                <h2 className="font-ornamental text-2xl text-ink text-center mb-1">{char.name}</h2>
-                {char.alias && (
-                  <p className="text-sm font-body italic text-ink-light">"{char.alias}"</p>
-                )}
-                <p className="text-xs text-ink-light/70 mt-1 font-body text-center">{char.title.split(',')[0]}</p>
+                  <h2 className="font-ornamental text-2xl text-ink text-center mb-1">{char.name}</h2>
+                  {char.alias && (
+                    <p className="text-sm font-body italic text-ink-light">"{char.alias}"</p>
+                  )}
+                  <p className="text-xs text-ink-light/70 mt-1 font-body text-center">{char.title.split(',')[0]}</p>
 
-                {house && (
-                  <div className={`mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full ${bgColor}/10 ${textColor} text-[11px] font-display font-semibold border ${borderColor}/20`}>
-                    <span className="material-symbols-outlined text-[14px]">{houseIcon}</span>
-                    {house.name}
-                  </div>
-                )}
+                  {house && (
+                    <div className={`mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full ${bgColor}/10 ${textColor} text-[11px] font-display font-semibold border ${borderColor}/20`}>
+                      <span className="material-symbols-outlined text-[14px]">{houseIcon}</span>
+                      {house.name}
+                    </div>
+                  )}
+                </div>
 
                 {spoilerMode && char.isDead && (
                   <div className="absolute top-4 right-4 w-7 h-7 bg-crimson rounded-full flex items-center justify-center wax-seal">
@@ -198,7 +233,7 @@ export default function TalesView({ onNavigateTo, spoilerMode }: TalesViewProps)
                   </div>
                 )}
 
-                <p className="absolute bottom-4 text-[10px] text-ink-light/40 font-display tracking-wider">Tap to reveal</p>
+                <p className="text-[10px] text-ink-light/40 font-display tracking-wider pt-2">Tap to reveal</p>
               </div>
 
               {/* BACK */}
